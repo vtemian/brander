@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeAll } from "bun:test";
-import { loadBrands, getBrandXml, listBrands } from "../src/brands";
+import { loadBrands, getBrandXml } from "../src/brands";
 import { createBrandInjectorHook } from "../src/hooks/brand-injector";
 
 describe("Brand context injection", () => {
@@ -49,7 +49,7 @@ describe("Brand injector hook", () => {
       };
 
       // Simulate a message containing the brand name
-      hook.setCurrentBrandRequest("nof1");
+      hook.setCurrentBrandRequest("test-session", "nof1");
 
       await hook["chat.params"](input, output);
 
@@ -68,7 +68,7 @@ describe("Brand injector hook", () => {
       };
 
       // No brand specified
-      hook.setCurrentBrandRequest(null);
+      hook.setCurrentBrandRequest("test-session", null);
 
       await hook["chat.params"](input, output);
 
@@ -87,7 +87,7 @@ describe("Brand injector hook", () => {
       };
 
       // Unknown brand
-      hook.setCurrentBrandRequest("unknown-brand");
+      hook.setCurrentBrandRequest("test-session", "unknown-brand");
 
       await hook["chat.params"](input, output);
 
@@ -105,7 +105,7 @@ describe("Brand injector hook", () => {
         system: "Some system prompt without placeholder",
       };
 
-      hook.setCurrentBrandRequest("nof1");
+      hook.setCurrentBrandRequest("test-session", "nof1");
 
       await hook["chat.params"](input, output);
 
@@ -126,7 +126,7 @@ describe("Brand injector hook", () => {
       await hook["chat.message"](input, output);
 
       // Internal state should have the brand name
-      expect(hook.getCurrentBrandRequest()).toBe("nof1");
+      expect(hook.getCurrentBrandRequest("test-session")).toBe("nof1");
     });
 
     it("should handle /brand command without arguments", async () => {
@@ -140,7 +140,7 @@ describe("Brand injector hook", () => {
       await hook["chat.message"](input, output);
 
       // Should be null when no brand specified
-      expect(hook.getCurrentBrandRequest()).toBeNull();
+      expect(hook.getCurrentBrandRequest("test-session")).toBeNull();
     });
 
     it("should handle messages without /brand command", async () => {
@@ -154,7 +154,104 @@ describe("Brand injector hook", () => {
       await hook["chat.message"](input, output);
 
       // Should remain undefined (not set)
-      expect(hook.getCurrentBrandRequest()).toBeUndefined();
+      expect(hook.getCurrentBrandRequest("test-session")).toBeUndefined();
+    });
+
+    it("should only match /brand at start of message", async () => {
+      const hook = createBrandInjectorHook();
+
+      const input = { sessionID: "test-session" };
+      const output = {
+        parts: [{ type: "text", text: "Please use /brand nof1 for styling" }],
+      };
+
+      await hook["chat.message"](input, output);
+
+      // Should NOT match /brand in the middle of a message
+      expect(hook.getCurrentBrandRequest("test-session")).toBeUndefined();
+    });
+
+    it("should isolate brand requests per session", async () => {
+      const hook = createBrandInjectorHook();
+
+      // Session 1 requests nof1
+      await hook["chat.message"](
+        { sessionID: "session-1" },
+        { parts: [{ type: "text", text: "/brand nof1" }] },
+      );
+
+      // Session 2 requests a different brand (or none)
+      await hook["chat.message"](
+        { sessionID: "session-2" },
+        { parts: [{ type: "text", text: "/brand" }] },
+      );
+
+      // Each session should have its own brand request
+      expect(hook.getCurrentBrandRequest("session-1")).toBe("nof1");
+      expect(hook.getCurrentBrandRequest("session-2")).toBeNull();
+    });
+  });
+
+  describe("chat.params hook - multiple placeholders", () => {
+    it("should replace ALL $BRAND_XML placeholders, not just the first", async () => {
+      const hook = createBrandInjectorHook();
+
+      const input = { sessionID: "test-session" };
+      const output = {
+        system: "First $BRAND_XML and second $BRAND_XML placeholder",
+      };
+
+      hook.setCurrentBrandRequest("test-session", "nof1");
+
+      await hook["chat.params"](input, output);
+
+      // Both placeholders should be replaced
+      expect(output.system).not.toContain("$BRAND_XML");
+      // Should contain brand content twice (or at least no placeholder remains)
+      const matches = output.system.match(/name="nof1"/g);
+      expect(matches?.length).toBe(2);
+    });
+  });
+
+  describe("chat.params hook - no prior /brand command", () => {
+    it("should remove placeholder when no /brand command was issued", async () => {
+      const hook = createBrandInjectorHook();
+
+      const input = { sessionID: "test-session" };
+      const output = {
+        system: "Some system prompt with $BRAND_XML placeholder",
+      };
+
+      // No setCurrentBrandRequest called - simulating no /brand command
+
+      await hook["chat.params"](input, output);
+
+      // Placeholder should be removed or handled gracefully, not left as literal
+      expect(output.system).not.toContain("$BRAND_XML");
+    });
+  });
+
+  describe("end-to-end flow", () => {
+    it("should inject brand XML after /brand command in message flow", async () => {
+      const hook = createBrandInjectorHook();
+      const sessionID = "e2e-test-session";
+
+      // Step 1: User sends /brand nof1 message
+      await hook["chat.message"](
+        { sessionID },
+        { parts: [{ type: "text", text: "/brand nof1" }] },
+      );
+
+      // Step 2: chat.params is called to build the system prompt
+      const paramsOutput = {
+        system: "You are a branding assistant. Brand context: $BRAND_XML",
+      };
+      await hook["chat.params"]({ sessionID }, paramsOutput);
+
+      // Step 3: Verify brand XML is in system prompt
+      expect(paramsOutput.system).not.toContain("$BRAND_XML");
+      expect(paramsOutput.system).toContain('name="nof1"');
+      expect(paramsOutput.system).toContain("#dcde8d"); // nof1 primary color
     });
   });
 });

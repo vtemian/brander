@@ -11,18 +11,18 @@ interface BrandInjectorHook {
     input: { sessionID: string },
     output: { options?: Record<string, unknown>; system?: string },
   ) => Promise<void>;
-  setCurrentBrandRequest: (brand: string | null) => void;
-  getCurrentBrandRequest: () => string | null | undefined;
+  setCurrentBrandRequest: (sessionID: string, brand: string | null) => void;
+  getCurrentBrandRequest: (sessionID: string) => string | null | undefined;
 }
 
 export function createBrandInjectorHook(): BrandInjectorHook {
-  // Track brand request per session
+  // Track brand request per session using a Map
   // undefined = not set, null = explicitly no brand, string = brand name
-  let currentBrandRequest: string | null | undefined = undefined;
+  const brandRequests = new Map<string, string | null>();
 
   function extractBrandFromMessage(text: string): string | null | undefined {
-    // Look for /brand command pattern
-    const brandMatch = text.match(/\/brand\s*(\S*)/);
+    // Look for /brand command pattern at start of message only
+    const brandMatch = text.match(/^\/brand\s*(\S*)/);
     if (!brandMatch) {
       return undefined; // Not a /brand command
     }
@@ -33,8 +33,8 @@ export function createBrandInjectorHook(): BrandInjectorHook {
 
   function generateBrandContent(brandName: string | null | undefined): string {
     if (brandName === undefined) {
-      // Not a brand request, leave placeholder as-is or return empty
-      return BRAND_PLACEHOLDER;
+      // Not a brand request, remove placeholder gracefully
+      return "";
     }
 
     if (brandName === null) {
@@ -56,7 +56,7 @@ export function createBrandInjectorHook(): BrandInjectorHook {
 
   return {
     "chat.message": async (
-      _input: { sessionID: string },
+      input: { sessionID: string },
       output: { parts: Array<{ type: string; text?: string }> },
     ) => {
       // Extract text from message parts
@@ -68,29 +68,30 @@ export function createBrandInjectorHook(): BrandInjectorHook {
       // Check if this is a /brand command
       const brandRequest = extractBrandFromMessage(text);
       if (brandRequest !== undefined) {
-        currentBrandRequest = brandRequest;
+        brandRequests.set(input.sessionID, brandRequest);
       }
     },
 
     "chat.params": async (
-      _input: { sessionID: string },
+      input: { sessionID: string },
       output: { options?: Record<string, unknown>; system?: string },
     ) => {
       if (!output.system || !output.system.includes(BRAND_PLACEHOLDER)) {
         return;
       }
 
+      const currentBrandRequest = brandRequests.get(input.sessionID);
       const brandContent = generateBrandContent(currentBrandRequest);
-      output.system = output.system.replace(BRAND_PLACEHOLDER, brandContent);
+      output.system = output.system.replaceAll(BRAND_PLACEHOLDER, brandContent);
     },
 
     // Test helpers
-    setCurrentBrandRequest: (brand: string | null) => {
-      currentBrandRequest = brand;
+    setCurrentBrandRequest: (sessionID: string, brand: string | null) => {
+      brandRequests.set(sessionID, brand);
     },
 
-    getCurrentBrandRequest: () => {
-      return currentBrandRequest;
+    getCurrentBrandRequest: (sessionID: string) => {
+      return brandRequests.get(sessionID);
     },
   };
 }
