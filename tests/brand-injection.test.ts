@@ -254,4 +254,24 @@ describe("Brand injector hook", () => {
       expect(paramsOutput.system).toContain("#dcde8d"); // nof1 primary color
     });
   });
+
+  describe("session cleanup", () => {
+    it("should clean up session state after brand injection", async () => {
+      const hook = createBrandInjectorHook();
+      const sessionID = "cleanup-test-session";
+
+      // Set up a brand request
+      hook.setCurrentBrandRequest(sessionID, "nof1");
+      expect(hook.getCurrentBrandRequest(sessionID)).toBe("nof1");
+
+      // Trigger injection via chat.params
+      const output = {
+        system: "Brand context: $BRAND_XML",
+      };
+      await hook["chat.params"]({ sessionID }, output);
+
+      // Session state should be cleaned up after injection
+      expect(hook.getCurrentBrandRequest(sessionID)).toBeUndefined();
+    });
+  });
 });

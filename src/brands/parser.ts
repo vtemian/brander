@@ -27,10 +27,19 @@ interface XmlElement {
   text: string;
 }
 
+function getInputPreview(input: string, maxLength = 50): string {
+  const trimmed = input.trim();
+  if (trimmed.length <= maxLength) {
+    return trimmed;
+  }
+  return trimmed.slice(0, maxLength) + "...";
+}
+
 function parseXmlElement(xml: string): XmlElement {
   const tagMatch = xml.match(/^<(\w+)([^>]*)>/);
   if (!tagMatch) {
-    throw new Error("Invalid XML: no opening tag found");
+    const preview = getInputPreview(xml);
+    throw new Error(`Invalid XML: no opening tag found. Input: "${preview}"`);
   }
 
   const tag = tagMatch[1];
@@ -215,13 +224,22 @@ function parseGuidelines(element: XmlElement): BrandGuidelines {
   };
 }
 
+const VALID_TARGETS = ["web", "mobile", "all"] as const;
+
 function parseMeta(element: XmlElement): BrandMeta {
   const descEl = requireChild(element, "description");
   const targetEl = requireChild(element, "target");
 
+  const targetValue = targetEl.text;
+  if (!VALID_TARGETS.includes(targetValue as (typeof VALID_TARGETS)[number])) {
+    throw new Error(
+      `Invalid target value "${targetValue}". Must be one of: ${VALID_TARGETS.join(", ")}`,
+    );
+  }
+
   return {
     description: descEl.text,
-    target: targetEl.text as "web" | "mobile" | "all",
+    target: targetValue as "web" | "mobile" | "all",
   };
 }
 
@@ -233,6 +251,14 @@ export function parseBrandXml(xml: string): Brand {
 
   if (root.tag !== "brand") {
     throw new Error("Invalid brand XML: root element must be <brand>");
+  }
+
+  // Validate required attributes on brand element
+  if (!root.attrs.name) {
+    throw new Error("Invalid brand XML: name attribute is required on <brand>");
+  }
+  if (!root.attrs.version) {
+    throw new Error("Invalid brand XML: version attribute is required on <brand>");
   }
 
   // Required sections

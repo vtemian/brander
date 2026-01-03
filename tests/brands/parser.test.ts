@@ -65,12 +65,86 @@ describe("parseBrandXml", () => {
     expect(brand.radius.sizes[0].name).toBe("md");
   });
 
-  it("should throw on invalid XML", () => {
-    expect(() => parseBrandXml("not xml")).toThrow();
+  it("should throw on invalid XML with helpful error message including input preview", () => {
+    expect(() => parseBrandXml("not xml")).toThrow(/not xml/);
+  });
+
+  it("should include truncated preview for long invalid input", () => {
+    const longInvalidInput = "x".repeat(100);
+    expect(() => parseBrandXml(longInvalidInput)).toThrow(/x{50}/);
   });
 
   it("should throw on missing required sections", () => {
     const invalidXml = `<brand name="test" version="1.0"><meta><description>Test</description><target>web</target></meta></brand>`;
     expect(() => parseBrandXml(invalidXml)).toThrow(/colors/i);
+  });
+
+  it("should throw when brand element is missing name attribute", () => {
+    const xmlWithoutName = `<?xml version="1.0" encoding="UTF-8"?>
+<brand version="1.0">
+  <meta>
+    <description>Test brand</description>
+    <target>web</target>
+  </meta>
+  <colors>
+    <palette name="primary" value="#dcde8d" description="Primary color"/>
+    <semantic name="background" light="#ffffff" dark="#1a1a1a"/>
+  </colors>
+  <typography>
+    <font role="sans" family="Inter" fallback="system-ui, sans-serif"/>
+    <scale name="base" size="14px" line-height="1.5"/>
+  </typography>
+  <spacing unit="0.25rem"/>
+  <radius>
+    <size name="md" value="0.375rem"/>
+  </radius>
+</brand>`;
+    expect(() => parseBrandXml(xmlWithoutName)).toThrow(/name.*attribute.*required/i);
+  });
+
+  it("should throw when brand element is missing version attribute", () => {
+    const xmlWithoutVersion = `<?xml version="1.0" encoding="UTF-8"?>
+<brand name="test">
+  <meta>
+    <description>Test brand</description>
+    <target>web</target>
+  </meta>
+  <colors>
+    <palette name="primary" value="#dcde8d" description="Primary color"/>
+    <semantic name="background" light="#ffffff" dark="#1a1a1a"/>
+  </colors>
+  <typography>
+    <font role="sans" family="Inter" fallback="system-ui, sans-serif"/>
+    <scale name="base" size="14px" line-height="1.5"/>
+  </typography>
+  <spacing unit="0.25rem"/>
+  <radius>
+    <size name="md" value="0.375rem"/>
+  </radius>
+</brand>`;
+    expect(() => parseBrandXml(xmlWithoutVersion)).toThrow(/version.*attribute.*required/i);
+  });
+
+  it("should throw for invalid target value", () => {
+    const xmlWithInvalidTarget = `<?xml version="1.0" encoding="UTF-8"?>
+<brand name="test" version="1.0">
+  <meta>
+    <description>Test brand</description>
+    <target>desktop</target>
+  </meta>
+  <colors>
+    <palette name="primary" value="#dcde8d" description="Primary color"/>
+    <semantic name="background" light="#ffffff" dark="#1a1a1a"/>
+  </colors>
+  <typography>
+    <font role="sans" family="Inter" fallback="system-ui, sans-serif"/>
+    <scale name="base" size="14px" line-height="1.5"/>
+  </typography>
+  <spacing unit="0.25rem"/>
+  <radius>
+    <size name="md" value="0.375rem"/>
+  </radius>
+</brand>`;
+    expect(() => parseBrandXml(xmlWithInvalidTarget)).toThrow(/invalid target.*desktop.*web.*mobile.*all/i);
   });
 });

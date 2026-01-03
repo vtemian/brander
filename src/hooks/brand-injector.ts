@@ -83,6 +83,9 @@ export function createBrandInjectorHook(): BrandInjectorHook {
       const currentBrandRequest = brandRequests.get(input.sessionID);
       const brandContent = generateBrandContent(currentBrandRequest);
       output.system = output.system.replaceAll(BRAND_PLACEHOLDER, brandContent);
+
+      // Clean up session state after injection to prevent memory leak
+      brandRequests.delete(input.sessionID);
     },
 
     // Test helpers
