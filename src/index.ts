@@ -1,6 +1,6 @@
 import type { Plugin } from "@opencode-ai/plugin";
 import { agents, PRIMARY_AGENT_NAME } from "./agents";
-import { loadBrands, listBrands, getBrandXml } from "./brands";
+import { loadBrands, listBrands } from "./brands";
 
 const BranderPlugin: Plugin = async (_ctx) => {
   // Load bundled brand definitions at startup

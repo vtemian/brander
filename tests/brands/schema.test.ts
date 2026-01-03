@@ -1,5 +1,5 @@
 import { describe, it, expect } from "bun:test";
-import type { Brand, BrandColors, BrandTypography, BrandSpacing, BrandRadius } from "../../src/brands/schema";
+import type { Brand } from "../../src/brands/schema";
 
 describe("Brand schema types", () => {
   it("should define Brand interface with required sections", () => {

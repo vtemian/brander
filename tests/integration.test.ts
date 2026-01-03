@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeAll } from "bun:test";
-import { loadBrands, getBrand, listBrands, getBrandXml } from "../src/brands";
+import { loadBrands, getBrand } from "../src/brands";
 import { agents, PRIMARY_AGENT_NAME } from "../src/agents";
 
 describe("Brander plugin integration", () => {

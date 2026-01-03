@@ -39,8 +39,7 @@ function parseXmlElement(xml: string): XmlElement {
 
   // Parse attributes
   const attrRegex = /(\w+(?:-\w+)?)="([^"]*)"/g;
-  let attrMatch;
-  while ((attrMatch = attrRegex.exec(attrString)) !== null) {
+  for (const attrMatch of attrString.matchAll(attrRegex)) {
     attrs[attrMatch[1]] = attrMatch[2];
   }
 
@@ -80,8 +79,7 @@ function parseXmlElement(xml: string): XmlElement {
           const attrStr = selfClosingMatch[0];
           const childAttrs: Record<string, string> = {};
           const childAttrRegex = /(\w+(?:-\w+)?)="([^"]*)"/g;
-          let childAttrMatch;
-          while ((childAttrMatch = childAttrRegex.exec(attrStr)) !== null) {
+          for (const childAttrMatch of attrStr.matchAll(childAttrRegex)) {
             childAttrs[childAttrMatch[1]] = childAttrMatch[2];
           }
           children.push({ tag: childTag, attrs: childAttrs, children: [], text: "" });
