@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<brand name="nof1" version="1.0">
+  <meta>
+    <description>OpenCode OC-1 design system</description>
+    <target>web</target>
+  </meta>
+
+  <colors>
+    <palette name="primary" value="#dcde8d" description="Yuzu yellow-green"/>
+    <palette name="interactive" value="#034cff" description="Cobalt blue"/>
+    <palette name="neutral" value="#8e8b8b"/>
+    <palette name="success" value="#12c905"/>
+    <palette name="warning" value="#ffdc17"/>
+    <palette name="error" value="#fc533a"/>
+    <palette name="info" value="#a753ae"/>
+    <semantic name="background" light="#ffffff" dark="#1a1a1a"/>
+    <semantic name="foreground" light="#1a1a1a" dark="#ffffff"/>
+    <semantic name="border" light="#e5e5e5" dark="#333333"/>
+  </colors>
+
+  <typography>
+    <font role="sans" family="Inter" fallback="system-ui, sans-serif"/>
+    <font role="mono" family="IBM Plex Mono" fallback="monospace"/>
+    <scale name="base" size="14px" line-height="1.5"/>
+    <scale name="sm" size="13px" line-height="1.4"/>
+    <scale name="lg" size="16px" line-height="1.5"/>
+  </typography>
+
+  <spacing unit="0.25rem"/>
+
+  <radius>
+    <size name="xs" value="0.125rem"/>
+    <size name="sm" value="0.25rem"/>
+    <size name="md" value="0.375rem"/>
+    <size name="lg" value="0.5rem"/>
+    <size name="xl" value="0.625rem"/>
+  </radius>
+
+  <components>
+    <button variant="primary" bg="interactive" text="white" radius="md"/>
+    <button variant="secondary" bg="transparent" text="interactive" border="interactive"/>
+    <card bg="background" border="border" radius="lg" padding="4"/>
+  </components>
+
+  <voice>
+    <tone>Direct, technical, no fluff</tone>
+    <principles>
+      <principle>Be concise</principle>
+      <principle>Use active voice</principle>
+    </principles>
+  </voice>
+
+  <guidelines>
+    <do>Use consistent spacing multiples</do>
+    <do>Prefer semantic color names over raw values</do>
+    <dont>Mix font families within body text</dont>
+    <dont>Use more than 3 levels of elevation</dont>
+  </guidelines>
+</brand>
