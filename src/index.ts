@@ -1,6 +1,7 @@
 import type { Plugin } from "@opencode-ai/plugin";
 import { agents, PRIMARY_AGENT_NAME } from "./agents";
 import { loadBrands, listBrands } from "./brands";
+import { createBrandInjectorHook } from "./hooks/brand-injector";
 
 const BranderPlugin: Plugin = async (_ctx) => {
   // Load bundled brand definitions at startup
@@ -12,6 +13,9 @@ const BranderPlugin: Plugin = async (_ctx) => {
   } else {
     console.log(`[brander] Loaded brands: ${availableBrands.join(", ")}`);
   }
+
+  // Create brand injector hook
+  const brandInjectorHook = createBrandInjectorHook();
 
   return {
     config: async (config) => {
@@ -30,6 +34,16 @@ const BranderPlugin: Plugin = async (_ctx) => {
           template: createBrandTemplate(availableBrands),
         },
       };
+    },
+
+    // Intercept messages to extract brand name from /brand command
+    "chat.message": async (input, output) => {
+      await brandInjectorHook["chat.message"](input, output);
+    },
+
+    // Inject brand XML into agent system prompt
+    "chat.params": async (input, output) => {
+      await brandInjectorHook["chat.params"](input, output);
     },
   };
 };

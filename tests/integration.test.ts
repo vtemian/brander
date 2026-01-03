@@ -99,4 +99,58 @@ describe("Brander plugin integration", () => {
       expect(config.command.brand.agent).toBe("brander");
     });
   });
+
+  describe("Brand XML injection end-to-end", () => {
+    it("should inject brand XML when /brand command is used with brand name", async () => {
+      const pluginModule = await import("../src/index");
+      const mockCtx = { cwd: () => "/test/project" };
+      const plugin = await pluginModule.default(mockCtx);
+
+      // Simulate /brand nof1 command message
+      const messageInput = { sessionID: "test-session" };
+      const messageOutput = {
+        parts: [{ type: "text", text: "/brand nof1" }],
+      };
+      await plugin["chat.message"](messageInput, messageOutput);
+
+      // Simulate chat.params with brander agent prompt
+      const paramsInput = { sessionID: "test-session" };
+      const paramsOutput = {
+        system: "Test prompt with $BRAND_XML placeholder",
+        options: {},
+      };
+      await plugin["chat.params"](paramsInput, paramsOutput);
+
+      // Brand XML should be injected
+      expect(paramsOutput.system).not.toContain("$BRAND_XML");
+      expect(paramsOutput.system).toContain('name="nof1"');
+      expect(paramsOutput.system).toContain("#dcde8d");
+    });
+
+    it("should show available brands when /brand command has no argument", async () => {
+      const pluginModule = await import("../src/index");
+      const mockCtx = { cwd: () => "/test/project" };
+      const plugin = await pluginModule.default(mockCtx);
+
+      // Simulate /brand command without argument
+      const messageInput = { sessionID: "test-session-2" };
+      const messageOutput = {
+        parts: [{ type: "text", text: "/brand" }],
+      };
+      await plugin["chat.message"](messageInput, messageOutput);
+
+      // Simulate chat.params
+      const paramsInput = { sessionID: "test-session-2" };
+      const paramsOutput = {
+        system: "Test prompt with $BRAND_XML placeholder",
+        options: {},
+      };
+      await plugin["chat.params"](paramsInput, paramsOutput);
+
+      // Should show available brands message
+      expect(paramsOutput.system).not.toContain("$BRAND_XML");
+      expect(paramsOutput.system).toContain("No brand specified");
+      expect(paramsOutput.system).toContain("nof1");
+    });
+  });
 });
