@@ -1,4 +1,4 @@
-import { getBrandXml, listBrands } from "../brands";
+import { getBrandXml, listBrands } from "@/brands";
 
 const BRAND_PLACEHOLDER = "$BRAND_XML";
 
@@ -55,10 +55,7 @@ export function createBrandInjectorHook(): BrandInjectorHook {
   }
 
   return {
-    "chat.message": async (
-      input: { sessionID: string },
-      output: { parts: Array<{ type: string; text?: string }> },
-    ) => {
+    "chat.message": async (input: { sessionID: string }, output: { parts: Array<{ type: string; text?: string }> }) => {
       // Extract text from message parts
       const text = output.parts
         .filter((p) => p.type === "text" && "text" in p)
