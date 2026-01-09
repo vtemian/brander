@@ -35,6 +35,7 @@
   "license": "MIT",
   "dependencies": {
     "@opencode-ai/plugin": "^1.0.224",
+    "fast-xml-parser": "^5.0.0",
     "valibot": "^1.0.0"
   },
   "devDependencies": {
