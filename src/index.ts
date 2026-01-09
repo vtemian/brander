@@ -1,8 +1,9 @@
 import type { Plugin } from "@opencode-ai/plugin";
-import { agents, PRIMARY_AGENT_NAME } from "./agents";
-import { loadBrands, listBrands } from "./brands";
-import { loadCustomConfig } from "./config/loader";
-import { createBrandInjectorHook } from "./hooks/brand-injector";
+
+import { agents, PRIMARY_AGENT_NAME } from "@/agents";
+import { listBrands, loadBrands } from "@/brands";
+import { loadCustomConfig } from "@/config/loader";
+import { createBrandInjectorHook } from "@/hooks/brand-injector";
 
 const BranderPlugin: Plugin = async (_ctx) => {
   await loadBrands();

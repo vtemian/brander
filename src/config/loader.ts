@@ -5,7 +5,7 @@ import { join } from "node:path";
 import type { AgentConfig } from "@opencode-ai/sdk";
 import * as v from "valibot";
 
-import type { AGENTS } from "../agents";
+import type { AGENTS } from "@/agents";
 
 import { type BranderConfig, BranderConfigSchema } from "./schema";
 
