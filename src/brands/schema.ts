@@ -86,7 +86,7 @@ export const BrandGuidelinesSchema = v.object({
 
 // Meta
 export const BrandMetaSchema = v.object({
-  description: v.string(),
+  description: v.optional(v.string()),
   target: v.picklist(["web", "mobile", "all"]),
 });
 

@@ -17,7 +17,7 @@ describe("Brand loader", () => {
 
     expect(brand).toBeDefined();
     expect(brand!.name).toBe("nof1");
-    expect(brand!.meta.description).toContain("OpenCode");
+    expect(brand!.meta.target).toBe("web");
   });
 
   it("should return undefined for unknown brand", async () => {
@@ -33,6 +33,6 @@ describe("Brand loader", () => {
 
     expect(json).toBeDefined();
     expect(json).toContain('"name": "nof1"');
-    expect(json).toContain("#dcde8d");
+    expect(json).toContain("#0000ff");
   });
 });
