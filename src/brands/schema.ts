@@ -9,20 +9,42 @@ export const PaletteColorSchema = v.object({
 
 export const SemanticColorSchema = v.object({
   name: v.string(),
-  light: v.string(),
-  dark: v.string(),
+  value: v.string(),
+});
+
+export const StateColorSchema = v.object({
+  name: v.string(),
+  value: v.string(),
+});
+
+export const DataVizColorSchema = v.object({
+  name: v.string(),
+  value: v.string(),
+});
+
+export const DataVizSchema = v.object({
+  categorical: v.array(DataVizColorSchema),
+  notes: v.optional(v.string()),
+});
+
+export const ColorModesSchema = v.object({
+  supportsDarkMode: v.optional(v.string()),
 });
 
 export const BrandColorsSchema = v.object({
   palette: v.array(PaletteColorSchema),
   semantic: v.array(SemanticColorSchema),
+  dataViz: v.optional(DataVizSchema),
+  states: v.optional(v.array(StateColorSchema)),
+  modes: v.optional(ColorModesSchema),
 });
 
 // Typography definitions
 export const FontDefinitionSchema = v.object({
-  role: v.picklist(["sans", "mono", "serif"]),
+  role: v.string(),
   family: v.string(),
   fallback: v.string(),
+  usage: v.optional(v.string()),
 });
 
 export const TypeScaleSchema = v.object({
@@ -49,6 +71,7 @@ export const RadiusSizeSchema = v.object({
 
 export const BrandRadiusSchema = v.object({
   sizes: v.array(RadiusSizeSchema),
+  notes: v.optional(v.string()),
 });
 
 // Optional: Components
@@ -84,10 +107,18 @@ export const BrandGuidelinesSchema = v.object({
   donts: v.array(v.string()),
 });
 
+// Meta confidence levels
+export const ConfidenceSchema = v.object({
+  high: v.optional(v.array(v.string())),
+  medium: v.optional(v.array(v.string())),
+  unknown: v.optional(v.array(v.string())),
+});
+
 // Meta
 export const BrandMetaSchema = v.object({
   description: v.optional(v.string()),
   target: v.picklist(["web", "mobile", "all"]),
+  confidence: v.optional(ConfidenceSchema),
 });
 
 // Main Brand schema
@@ -107,6 +138,10 @@ export const BrandSchema = v.object({
 // Infer TypeScript types from schemas
 export type PaletteColor = v.InferOutput<typeof PaletteColorSchema>;
 export type SemanticColor = v.InferOutput<typeof SemanticColorSchema>;
+export type StateColor = v.InferOutput<typeof StateColorSchema>;
+export type DataVizColor = v.InferOutput<typeof DataVizColorSchema>;
+export type DataViz = v.InferOutput<typeof DataVizSchema>;
+export type ColorModes = v.InferOutput<typeof ColorModesSchema>;
 export type BrandColors = v.InferOutput<typeof BrandColorsSchema>;
 export type FontDefinition = v.InferOutput<typeof FontDefinitionSchema>;
 export type TypeScale = v.InferOutput<typeof TypeScaleSchema>;
@@ -119,5 +154,6 @@ export type CardComponent = v.InferOutput<typeof CardComponentSchema>;
 export type BrandComponents = v.InferOutput<typeof BrandComponentsSchema>;
 export type BrandVoice = v.InferOutput<typeof BrandVoiceSchema>;
 export type BrandGuidelines = v.InferOutput<typeof BrandGuidelinesSchema>;
+export type Confidence = v.InferOutput<typeof ConfidenceSchema>;
 export type BrandMeta = v.InferOutput<typeof BrandMetaSchema>;
 export type Brand = v.InferOutput<typeof BrandSchema>;
