@@ -124,7 +124,7 @@ Optional `~/.config/opencode/brander.json`:
 ```json
 {
   "agents": {
-    "brander": { "model": "anthropic/claude-sonnet-4" }
+    "brander": { "model": "anthropic/claude-opus-4" }
   }
 }
 ```
