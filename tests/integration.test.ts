@@ -1,6 +1,7 @@
-import { describe, it, expect, beforeAll } from "bun:test";
-import { loadBrands, getBrand } from "../src/brands";
+import { beforeAll, describe, expect, it } from "bun:test";
+
 import { agents, PRIMARY_AGENT_NAME } from "../src/agents";
+import { getBrand, loadBrands } from "../src/brands";
 
 describe("Brander plugin integration", () => {
   beforeAll(async () => {
@@ -100,8 +101,8 @@ describe("Brander plugin integration", () => {
     });
   });
 
-  describe("Brand XML injection end-to-end", () => {
-    it("should inject brand XML when /brand command is used with brand name", async () => {
+  describe("Brand JSON injection end-to-end", () => {
+    it("should inject brand JSON when /brand command is used with brand name", async () => {
       const pluginModule = await import("../src/index");
       const mockCtx = { cwd: () => "/test/project" };
       const plugin = await pluginModule.default(mockCtx);
@@ -121,9 +122,9 @@ describe("Brander plugin integration", () => {
       };
       await plugin["chat.params"](paramsInput, paramsOutput);
 
-      // Brand XML should be injected
+      // Brand JSON should be injected
       expect(paramsOutput.system).not.toContain("$BRAND_XML");
-      expect(paramsOutput.system).toContain('name="nof1"');
+      expect(paramsOutput.system).toContain('"name": "nof1"');
       expect(paramsOutput.system).toContain("#dcde8d");
     });
 

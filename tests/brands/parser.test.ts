@@ -1,30 +1,31 @@
 import { describe, expect, it } from "bun:test";
 
-import { parseBrandXml } from "../../src/brands/parser";
+import { parseBrandJson } from "../../src/brands/parser";
 
-const MINIMAL_BRAND_XML = `<?xml version="1.0" encoding="UTF-8"?>
-<brand name="test" version="1.0">
-  <meta>
-    <description>Test brand</description>
-    <target>web</target>
-  </meta>
-  <colors>
-    <palette name="primary" value="#dcde8d" description="Primary color"/>
-    <semantic name="background" light="#ffffff" dark="#1a1a1a"/>
-  </colors>
-  <typography>
-    <font role="sans" family="Inter" fallback="system-ui, sans-serif"/>
-    <scale name="base" size="14px" line-height="1.5"/>
-  </typography>
-  <spacing unit="0.25rem"/>
-  <radius>
-    <size name="md" value="0.375rem"/>
-  </radius>
-</brand>`;
+const MINIMAL_BRAND_JSON = JSON.stringify({
+  name: "test",
+  version: "1.0",
+  meta: {
+    description: "Test brand",
+    target: "web",
+  },
+  colors: {
+    palette: [{ name: "primary", value: "#dcde8d", description: "Primary color" }],
+    semantic: [{ name: "background", light: "#ffffff", dark: "#1a1a1a" }],
+  },
+  typography: {
+    fonts: [{ role: "sans", family: "Inter", fallback: "system-ui, sans-serif" }],
+    scale: [{ name: "base", size: "14px", lineHeight: "1.5" }],
+  },
+  spacing: { unit: "0.25rem" },
+  radius: {
+    sizes: [{ name: "md", value: "0.375rem" }],
+  },
+});
 
-describe("parseBrandXml", () => {
-  it("should parse minimal brand XML", () => {
-    const brand = parseBrandXml(MINIMAL_BRAND_XML);
+describe("parseBrandJson", () => {
+  it("should parse minimal brand JSON", () => {
+    const brand = parseBrandJson(MINIMAL_BRAND_JSON);
 
     expect(brand.name).toBe("test");
     expect(brand.version).toBe("1.0");
@@ -33,7 +34,7 @@ describe("parseBrandXml", () => {
   });
 
   it("should parse colors section", () => {
-    const brand = parseBrandXml(MINIMAL_BRAND_XML);
+    const brand = parseBrandJson(MINIMAL_BRAND_JSON);
 
     expect(brand.colors.palette).toHaveLength(1);
     expect(brand.colors.palette[0].name).toBe("primary");
@@ -47,7 +48,7 @@ describe("parseBrandXml", () => {
   });
 
   it("should parse typography section", () => {
-    const brand = parseBrandXml(MINIMAL_BRAND_XML);
+    const brand = parseBrandJson(MINIMAL_BRAND_JSON);
 
     expect(brand.typography.fonts).toHaveLength(1);
     expect(brand.typography.fonts[0].role).toBe("sans");
@@ -59,92 +60,60 @@ describe("parseBrandXml", () => {
   });
 
   it("should parse spacing and radius", () => {
-    const brand = parseBrandXml(MINIMAL_BRAND_XML);
+    const brand = parseBrandJson(MINIMAL_BRAND_JSON);
 
     expect(brand.spacing.unit).toBe("0.25rem");
     expect(brand.radius.sizes).toHaveLength(1);
     expect(brand.radius.sizes[0].name).toBe("md");
   });
 
-  it("should throw on invalid XML", () => {
-    expect(() => parseBrandXml("not xml")).toThrow(/brand/i);
+  it("should throw on invalid JSON", () => {
+    expect(() => parseBrandJson("not json")).toThrow();
   });
 
   it("should throw on empty input", () => {
-    expect(() => parseBrandXml("")).toThrow(/brand/i);
+    expect(() => parseBrandJson("")).toThrow();
   });
 
   it("should throw on missing required sections", () => {
-    const invalidXml = `<brand name="test" version="1.0"><meta><description>Test</description><target>web</target></meta></brand>`;
-    expect(() => parseBrandXml(invalidXml)).toThrow(/colors/i);
+    const invalidJson = JSON.stringify({ name: "test", version: "1.0", meta: { description: "Test", target: "web" } });
+    expect(() => parseBrandJson(invalidJson)).toThrow(/colors/i);
   });
 
-  it("should throw when brand element is missing name attribute", () => {
-    const xmlWithoutName = `<?xml version="1.0" encoding="UTF-8"?>
-<brand version="1.0">
-  <meta>
-    <description>Test brand</description>
-    <target>web</target>
-  </meta>
-  <colors>
-    <palette name="primary" value="#dcde8d" description="Primary color"/>
-    <semantic name="background" light="#ffffff" dark="#1a1a1a"/>
-  </colors>
-  <typography>
-    <font role="sans" family="Inter" fallback="system-ui, sans-serif"/>
-    <scale name="base" size="14px" line-height="1.5"/>
-  </typography>
-  <spacing unit="0.25rem"/>
-  <radius>
-    <size name="md" value="0.375rem"/>
-  </radius>
-</brand>`;
-    expect(() => parseBrandXml(xmlWithoutName)).toThrow(/name.*attribute.*required/i);
+  it("should throw when name is missing", () => {
+    const jsonWithoutName = JSON.stringify({
+      version: "1.0",
+      meta: { description: "Test brand", target: "web" },
+      colors: { palette: [], semantic: [] },
+      typography: { fonts: [], scale: [] },
+      spacing: { unit: "0.25rem" },
+      radius: { sizes: [] },
+    });
+    expect(() => parseBrandJson(jsonWithoutName)).toThrow(/name/i);
   });
 
-  it("should throw when brand element is missing version attribute", () => {
-    const xmlWithoutVersion = `<?xml version="1.0" encoding="UTF-8"?>
-<brand name="test">
-  <meta>
-    <description>Test brand</description>
-    <target>web</target>
-  </meta>
-  <colors>
-    <palette name="primary" value="#dcde8d" description="Primary color"/>
-    <semantic name="background" light="#ffffff" dark="#1a1a1a"/>
-  </colors>
-  <typography>
-    <font role="sans" family="Inter" fallback="system-ui, sans-serif"/>
-    <scale name="base" size="14px" line-height="1.5"/>
-  </typography>
-  <spacing unit="0.25rem"/>
-  <radius>
-    <size name="md" value="0.375rem"/>
-  </radius>
-</brand>`;
-    expect(() => parseBrandXml(xmlWithoutVersion)).toThrow(/version.*attribute.*required/i);
+  it("should throw when version is missing", () => {
+    const jsonWithoutVersion = JSON.stringify({
+      name: "test",
+      meta: { description: "Test brand", target: "web" },
+      colors: { palette: [], semantic: [] },
+      typography: { fonts: [], scale: [] },
+      spacing: { unit: "0.25rem" },
+      radius: { sizes: [] },
+    });
+    expect(() => parseBrandJson(jsonWithoutVersion)).toThrow(/version/i);
   });
 
   it("should throw for invalid target value", () => {
-    const xmlWithInvalidTarget = `<?xml version="1.0" encoding="UTF-8"?>
-<brand name="test" version="1.0">
-  <meta>
-    <description>Test brand</description>
-    <target>desktop</target>
-  </meta>
-  <colors>
-    <palette name="primary" value="#dcde8d" description="Primary color"/>
-    <semantic name="background" light="#ffffff" dark="#1a1a1a"/>
-  </colors>
-  <typography>
-    <font role="sans" family="Inter" fallback="system-ui, sans-serif"/>
-    <scale name="base" size="14px" line-height="1.5"/>
-  </typography>
-  <spacing unit="0.25rem"/>
-  <radius>
-    <size name="md" value="0.375rem"/>
-  </radius>
-</brand>`;
-    expect(() => parseBrandXml(xmlWithInvalidTarget)).toThrow(/invalid target.*desktop.*web.*mobile.*all/i);
+    const jsonWithInvalidTarget = JSON.stringify({
+      name: "test",
+      version: "1.0",
+      meta: { description: "Test brand", target: "desktop" },
+      colors: { palette: [], semantic: [] },
+      typography: { fonts: [], scale: [] },
+      spacing: { unit: "0.25rem" },
+      radius: { sizes: [] },
+    });
+    expect(() => parseBrandJson(jsonWithInvalidTarget)).toThrow(/target/i);
   });
 });

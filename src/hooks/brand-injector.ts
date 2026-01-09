@@ -1,4 +1,4 @@
-import { getBrandXml, listBrands } from "@/brands";
+import { getBrandJson, listBrands } from "@/brands";
 
 const BRAND_PLACEHOLDER = "$BRAND_XML";
 
@@ -43,10 +43,10 @@ export function createBrandInjectorHook(): BrandInjectorHook {
       return `No brand specified. Available brands:\n${available.map((b) => `- ${b}`).join("\n")}\n\nPlease ask the user to specify a brand.`;
     }
 
-    // Try to get the brand XML
-    const xml = getBrandXml(brandName);
-    if (xml) {
-      return xml;
+    // Try to get the brand JSON
+    const json = getBrandJson(brandName);
+    if (json) {
+      return json;
     }
 
     // Brand not found

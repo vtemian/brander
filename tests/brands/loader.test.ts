@@ -1,5 +1,6 @@
-import { describe, it, expect } from "bun:test";
-import { loadBrands, getBrand, listBrands, getBrandXml } from "../../src/brands";
+import { describe, expect, it } from "bun:test";
+
+import { getBrand, getBrandJson, listBrands, loadBrands } from "../../src/brands";
 
 describe("Brand loader", () => {
   it("should load bundled brands on init", async () => {
@@ -26,12 +27,12 @@ describe("Brand loader", () => {
     expect(brand).toBeUndefined();
   });
 
-  it("should get raw XML for brand", async () => {
+  it("should get raw JSON for brand", async () => {
     await loadBrands();
-    const xml = getBrandXml("nof1");
+    const json = getBrandJson("nof1");
 
-    expect(xml).toBeDefined();
-    expect(xml).toContain("<brand");
-    expect(xml).toContain('name="nof1"');
+    expect(json).toBeDefined();
+    expect(json).toContain('"name": "nof1"');
+    expect(json).toContain("#dcde8d");
   });
 });
