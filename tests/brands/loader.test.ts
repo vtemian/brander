@@ -33,6 +33,6 @@ describe("Brand loader", () => {
 
     expect(json).toBeDefined();
     expect(json).toContain('"name": "nof1"');
-    expect(json).toContain("#0000ff");
+    expect(json).toContain("#111111");
   });
 });

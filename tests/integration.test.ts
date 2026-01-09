@@ -14,7 +14,7 @@ describe("Brander plugin integration", () => {
 
       expect(brand).toBeDefined();
       expect(brand!.name).toBe("nof1");
-      expect(brand!.version).toBe("1.0");
+      expect(brand!.version).toBe("1.1");
 
       // Required sections
       expect(brand!.meta).toBeDefined();
@@ -30,18 +30,18 @@ describe("Brander plugin integration", () => {
 
     it("should have correct nof1 color palette", () => {
       const brand = getBrand("nof1");
-      const primary = brand!.colors.palette.find((c) => c.name === "primary");
-      const secondary = brand!.colors.palette.find((c) => c.name === "secondary");
+      const ink = brand!.colors.palette.find((c) => c.name === "ink");
+      const paper = brand!.colors.palette.find((c) => c.name === "paper");
 
-      expect(primary?.value).toBe("#0000ff");
-      expect(secondary?.value).toBe("#8b5cf6");
+      expect(ink?.value).toBe("#111111");
+      expect(paper?.value).toBe("#ffffff");
     });
 
     it("should have correct nof1 typography", () => {
       const brand = getBrand("nof1");
       const monoFont = brand!.typography.fonts.find((f) => f.role === "mono");
 
-      expect(monoFont?.family).toBe("IBM Plex Mono");
+      expect(monoFont?.family).toBe("ui-monospace");
     });
   });
 
@@ -122,7 +122,7 @@ describe("Brander plugin integration", () => {
       // Brand JSON should be injected
       expect(paramsOutput.system).not.toContain("$BRAND_XML");
       expect(paramsOutput.system).toContain('"name": "nof1"');
-      expect(paramsOutput.system).toContain("#0000ff");
+      expect(paramsOutput.system).toContain("#111111");
     });
 
     it("should show available brands when /brand command has no argument", async () => {

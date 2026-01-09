@@ -314,7 +314,7 @@
 
   <script>
     const BRANDS = {
-      nof1: {"name":"nof1","version":"1.0","meta":{"target":"web"},"colors":{"palette":[{"name":"primary","value":"#0000ff","description":"Accent primary"},{"name":"secondary","value":"#8b5cf6","description":"Accent secondary"},{"name":"success","value":"#00aa00"},{"name":"warning","value":"#ffaa00"},{"name":"error","value":"#ff0000"}],"semantic":[{"name":"background","light":"#ffffff","dark":"#ffffff"},{"name":"foreground","light":"#000000","dark":"#000000"},{"name":"foreground-muted","light":"#333333","dark":"#333333"},{"name":"foreground-subtle","light":"#666666","dark":"#666666"},{"name":"surface","light":"#ffffff","dark":"#ffffff"},{"name":"surface-elevated","light":"#f8f9fa","dark":"#f8f9fa"},{"name":"surface-hover","light":"#f1f3f4","dark":"#f1f3f4"},{"name":"border","light":"#000000","dark":"#000000"},{"name":"border-subtle","light":"#cccccc","dark":"#cccccc"}]},"typography":{"fonts":[{"role":"mono","family":"IBM Plex Mono","fallback":"monospace"}],"scale":[{"name":"base","size":"1rem","lineHeight":"1.4"},{"name":"sm","size":"0.875rem","lineHeight":"1.25rem"},{"name":"xs","size":"0.75rem","lineHeight":"1rem"},{"name":"lg","size":"1.125rem","lineHeight":"1.75rem"}]},"spacing":{"unit":"0.25rem"},"radius":{"sizes":[{"name":"sm","value":"0.125rem"},{"name":"md","value":"0.25rem"},{"name":"lg","value":"0.5rem"},{"name":"xl","value":"0.75rem"},{"name":"full","value":"9999px"}]},"voice":{"tone":"Terminal, technical, precise","principles":["Monospace everywhere","High contrast","No fluff"]},"guidelines":{"dos":["Use monospace font consistently","Keep borders sharp (black)","Use semantic color names"],"donts":["Mix font families","Use soft/rounded aesthetics","Add unnecessary decoration"]}}
+      nof1: {"name":"nof1","version":"1.1","meta":{"target":"web","confidence":{"high":["neutral UI (white bg, dark text)","categorical chart colors (multi-series)"],"medium":["serif display for wordmark/brand mark","subtle borders and rounding"],"unknown":["dark mode support","exact font families","exact hex values from CSS"]}},"colors":{"palette":[{"name":"ink","value":"#111111","description":"Primary text and key strokes"},{"name":"paper","value":"#ffffff","description":"Primary background"},{"name":"muted","value":"#6b7280","description":"Secondary text"},{"name":"border","value":"#e5e7eb","description":"Dividers and subtle borders"}],"dataViz":{"categorical":[{"name":"series-blue","value":"#2563eb"},{"name":"series-purple","value":"#7c3aed"},{"name":"series-orange","value":"#f59e0b"},{"name":"series-teal","value":"#14b8a6"},{"name":"series-slate","value":"#64748b"},{"name":"series-black","value":"#111111"}],"notes":"These are for chart series and legend chips. nof1 visuals show multiple series colors, not a single brand primary."},"semantic":[{"name":"background","value":"#ffffff"},{"name":"surface","value":"#ffffff"},{"name":"surface-elevated","value":"#f9fafb"},{"name":"foreground","value":"#111111"},{"name":"foreground-muted","value":"#6b7280"},{"name":"foreground-subtle","value":"#9ca3af"},{"name":"border","value":"#e5e7eb"},{"name":"border-subtle","value":"#f1f5f9"}],"states":[{"name":"success","value":"#16a34a"},{"name":"warning","value":"#f59e0b"},{"name":"error","value":"#dc2626"}],"modes":{"supportsDarkMode":"unknown"}},"typography":{"fonts":[{"role":"display","family":"serif","fallback":"Georgia, 'Times New Roman', serif","usage":"Brand mark / hero headings (serif look in public visuals)"},{"role":"ui","family":"system-ui","fallback":"-apple-system, BlinkMacSystemFont, 'Segoe UI', Inter, Helvetica, Arial, sans-serif","usage":"UI text, tables, labels"},{"role":"mono","family":"ui-monospace","fallback":"SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace","usage":"Only for numbers, ticks, logs if needed"}],"scale":[{"name":"xs","size":"0.75rem","lineHeight":"1rem"},{"name":"sm","size":"0.875rem","lineHeight":"1.25rem"},{"name":"base","size":"1rem","lineHeight":"1.5rem"},{"name":"lg","size":"1.125rem","lineHeight":"1.75rem"},{"name":"xl","size":"1.25rem","lineHeight":"1.75rem"},{"name":"2xl","size":"1.5rem","lineHeight":"2rem"}]},"spacing":{"unit":"0.25rem"},"radius":{"sizes":[{"name":"sm","value":"0.25rem"},{"name":"md","value":"0.5rem"},{"name":"lg","value":"0.75rem"},{"name":"xl","value":"1rem"},{"name":"full","value":"9999px"}],"notes":"Public visuals read as modern dashboard, not sharp terminal rectangles."},"voice":{"tone":"Research-lab, benchmark-driven, calm, precise","principles":["Show the data, then the interpretation","Avoid hype language","Be explicit about assumptions and limits"]},"guidelines":{"dos":["Use neutral UI colors so charts stay legible","Use categorical series colors consistently for models","Keep layouts spacious and chart-first","Use subtle borders and muted text for secondary info"],"donts":["Do not force monospace everywhere","Do not use harsh black borders for everything","Do not treat one series color as the brand primary","Do not add decorative gradients that compete with the charts"]}}
     };
 
     function loadBrand() {
@@ -359,16 +359,28 @@
         root.style.setProperty(`--color-${color.name}`, color.value);
       }
 
-      // Colors - semantic (light mode defaults)
+      // Colors - semantic
       for (const semantic of brand.colors.semantic) {
-        root.style.setProperty(`--color-${semantic.name}`, semantic.light);
+        root.style.setProperty(`--color-${semantic.name}`, semantic.value);
       }
 
-      // Store dark mode colors for toggle
-      window.darkModeColors = {};
-      for (const semantic of brand.colors.semantic) {
-        window.darkModeColors[semantic.name] = { light: semantic.light, dark: semantic.dark };
+      // Colors - states (success, warning, error)
+      if (brand.colors.states) {
+        for (const state of brand.colors.states) {
+          root.style.setProperty(`--color-${state.name}`, state.value);
+        }
       }
+
+      // Colors - dataViz categorical (for charts)
+      if (brand.colors.dataViz?.categorical) {
+        brand.colors.dataViz.categorical.forEach((color, idx) => {
+          root.style.setProperty(`--color-${color.name}`, color.value);
+          root.style.setProperty(`--color-series-${idx + 1}`, color.value);
+        });
+      }
+
+      // Dark mode not currently supported in new structure
+      window.darkModeColors = null;
 
       // Typography
       const fonts = brand.typography.fonts;
@@ -411,9 +423,10 @@
         renderVoiceAndGuidelines(brand.voice, brand.guidelines);
       }
 
-      // Apply system preference
-      if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
-        applyDarkMode(true);
+      // Hide dark mode toggle if not supported
+      if (brand.colors.modes?.supportsDarkMode !== 'yes') {
+        const toggle = document.querySelector('.theme-toggle');
+        if (toggle) toggle.style.display = 'none';
       }
     }
 
@@ -538,14 +551,8 @@
     }
 
     function applyDarkMode(dark) {
-      const html = document.documentElement;
-      html.setAttribute('data-theme', dark ? 'dark' : '');
-
-      if (window.darkModeColors) {
-        for (const [name, colors] of Object.entries(window.darkModeColors)) {
-          html.style.setProperty(`--color-${name}`, dark ? colors.dark : colors.light);
-        }
-      }
+      // Dark mode not currently supported with new brand structure
+      // Keep this as a no-op for now
     }
 
     loadBrand();
