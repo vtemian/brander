@@ -3,7 +3,7 @@ import type { AgentConfig } from "@opencode-ai/sdk";
 export const styleAnalyzerAgent: AgentConfig = {
   description: "Analyzes CSS, Tailwind, and design token patterns in web projects",
   mode: "subagent",
-  model: "anthropic/claude-sonnet-4-20250514",
+  model: "anthropic/claude-opus-4-5",
   temperature: 0.1,
   tools: {
     write: false,

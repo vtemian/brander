@@ -6,8 +6,8 @@ describe("brander agent", () => {
     expect(branderAgent.mode).toBe("primary");
   });
 
-  it("should use claude-sonnet model", () => {
-    expect(branderAgent.model).toContain("sonnet");
+  it("should use claude-opus model", () => {
+    expect(branderAgent.model).toContain("opus");
   });
 
   it("should have read-only tools", () => {
