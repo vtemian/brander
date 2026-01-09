@@ -15,7 +15,9 @@ You orchestrate subagents to gather information, then synthesize findings into a
 </purpose>
 
 <brand-context>
-$BRAND_XML
+The target brand JSON is provided below. DO NOT try to read brand files from disk - use this data directly.
+
+$BRAND_JSON
 </brand-context>
 
 <workflow>
