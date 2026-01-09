@@ -1,5 +1,6 @@
-import { describe, it, expect, beforeAll } from "bun:test";
-import { loadBrands, getBrandXml } from "../src/brands";
+import { beforeAll, describe, expect, it } from "bun:test";
+
+import { getBrandJson, loadBrands } from "../src/brands";
 import { createBrandInjectorHook } from "../src/hooks/brand-injector";
 
 describe("Brand context injection", () => {
@@ -7,7 +8,7 @@ describe("Brand context injection", () => {
     await loadBrands();
   });
 
-  it("should inject brand XML into agent prompt", async () => {
+  it("should inject brand JSON into agent prompt", async () => {
     const pluginModule = await import("../src/index");
     const mockCtx = { cwd: () => "/test/project" };
     const plugin = await pluginModule.default(mockCtx);
@@ -21,16 +22,16 @@ describe("Brand context injection", () => {
 
     const branderConfig = config.agent.brander;
 
-    // The prompt should have the $BRAND_XML placeholder
+    // The prompt should have the $BRAND_XML placeholder (keeping name for backward compat)
     expect(branderConfig.prompt).toContain("$BRAND_XML");
   });
 
-  it("should have nof1 brand XML available", () => {
-    const xml = getBrandXml("nof1");
+  it("should have nof1 brand JSON available", () => {
+    const json = getBrandJson("nof1");
 
-    expect(xml).toBeDefined();
-    expect(xml).toContain('name="nof1"');
-    expect(xml).toContain("#dcde8d"); // primary color
+    expect(json).toBeDefined();
+    expect(json).toContain('"name": "nof1"');
+    expect(json).toContain("#dcde8d"); // primary color
   });
 });
 
@@ -53,9 +54,9 @@ describe("Brand injector hook", () => {
 
       await hook["chat.params"](input, output);
 
-      // $BRAND_XML should be replaced with actual brand XML
+      // $BRAND_XML should be replaced with actual brand JSON
       expect(output.system).not.toContain("$BRAND_XML");
-      expect(output.system).toContain('name="nof1"');
+      expect(output.system).toContain('"name": "nof1"');
       expect(output.system).toContain("#dcde8d"); // primary color from nof1 brand
     });
 
@@ -175,16 +176,10 @@ describe("Brand injector hook", () => {
       const hook = createBrandInjectorHook();
 
       // Session 1 requests nof1
-      await hook["chat.message"](
-        { sessionID: "session-1" },
-        { parts: [{ type: "text", text: "/brand nof1" }] },
-      );
+      await hook["chat.message"]({ sessionID: "session-1" }, { parts: [{ type: "text", text: "/brand nof1" }] });
 
       // Session 2 requests a different brand (or none)
-      await hook["chat.message"](
-        { sessionID: "session-2" },
-        { parts: [{ type: "text", text: "/brand" }] },
-      );
+      await hook["chat.message"]({ sessionID: "session-2" }, { parts: [{ type: "text", text: "/brand" }] });
 
       // Each session should have its own brand request
       expect(hook.getCurrentBrandRequest("session-1")).toBe("nof1");
@@ -207,8 +202,8 @@ describe("Brand injector hook", () => {
 
       // Both placeholders should be replaced
       expect(output.system).not.toContain("$BRAND_XML");
-      // Should contain brand content twice (or at least no placeholder remains)
-      const matches = output.system.match(/name="nof1"/g);
+      // Should contain brand content twice
+      const matches = output.system.match(/"name": "nof1"/g);
       expect(matches?.length).toBe(2);
     });
   });
@@ -232,15 +227,12 @@ describe("Brand injector hook", () => {
   });
 
   describe("end-to-end flow", () => {
-    it("should inject brand XML after /brand command in message flow", async () => {
+    it("should inject brand JSON after /brand command in message flow", async () => {
       const hook = createBrandInjectorHook();
       const sessionID = "e2e-test-session";
 
       // Step 1: User sends /brand nof1 message
-      await hook["chat.message"](
-        { sessionID },
-        { parts: [{ type: "text", text: "/brand nof1" }] },
-      );
+      await hook["chat.message"]({ sessionID }, { parts: [{ type: "text", text: "/brand nof1" }] });
 
       // Step 2: chat.params is called to build the system prompt
       const paramsOutput = {
@@ -248,9 +240,9 @@ describe("Brand injector hook", () => {
       };
       await hook["chat.params"]({ sessionID }, paramsOutput);
 
-      // Step 3: Verify brand XML is in system prompt
+      // Step 3: Verify brand JSON is in system prompt
       expect(paramsOutput.system).not.toContain("$BRAND_XML");
-      expect(paramsOutput.system).toContain('name="nof1"');
+      expect(paramsOutput.system).toContain('"name": "nof1"');
       expect(paramsOutput.system).toContain("#dcde8d"); // nof1 primary color
     });
   });

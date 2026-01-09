@@ -1,0 +1,62 @@
+{
+  "name": "nof1",
+  "version": "1.0",
+  "meta": {
+    "description": "OpenCode OC-1 design system",
+    "target": "web"
+  },
+  "colors": {
+    "palette": [
+      { "name": "primary", "value": "#dcde8d", "description": "Yuzu yellow-green" },
+      { "name": "interactive", "value": "#034cff", "description": "Cobalt blue" },
+      { "name": "neutral", "value": "#8e8b8b" },
+      { "name": "success", "value": "#12c905" },
+      { "name": "warning", "value": "#ffdc17" },
+      { "name": "error", "value": "#fc533a" },
+      { "name": "info", "value": "#a753ae" }
+    ],
+    "semantic": [
+      { "name": "background", "light": "#ffffff", "dark": "#1a1a1a" },
+      { "name": "foreground", "light": "#1a1a1a", "dark": "#ffffff" },
+      { "name": "border", "light": "#e5e5e5", "dark": "#333333" }
+    ]
+  },
+  "typography": {
+    "fonts": [
+      { "role": "sans", "family": "Inter", "fallback": "system-ui, sans-serif" },
+      { "role": "mono", "family": "IBM Plex Mono", "fallback": "monospace" }
+    ],
+    "scale": [
+      { "name": "base", "size": "14px", "lineHeight": "1.5" },
+      { "name": "sm", "size": "13px", "lineHeight": "1.4" },
+      { "name": "lg", "size": "16px", "lineHeight": "1.5" }
+    ]
+  },
+  "spacing": {
+    "unit": "0.25rem"
+  },
+  "radius": {
+    "sizes": [
+      { "name": "xs", "value": "0.125rem" },
+      { "name": "sm", "value": "0.25rem" },
+      { "name": "md", "value": "0.375rem" },
+      { "name": "lg", "value": "0.5rem" },
+      { "name": "xl", "value": "0.625rem" }
+    ]
+  },
+  "components": {
+    "buttons": [
+      { "variant": "primary", "bg": "interactive", "text": "white", "radius": "md" },
+      { "variant": "secondary", "bg": "transparent", "text": "interactive", "border": "interactive" }
+    ],
+    "cards": [{ "bg": "background", "border": "border", "radius": "lg", "padding": "4" }]
+  },
+  "voice": {
+    "tone": "Direct, technical, no fluff",
+    "principles": ["Be concise", "Use active voice"]
+  },
+  "guidelines": {
+    "dos": ["Use consistent spacing multiples", "Prefer semantic color names over raw values"],
+    "donts": ["Mix font families within body text", "Use more than 3 levels of elevation"]
+  }
+}
