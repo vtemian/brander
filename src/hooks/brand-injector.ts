@@ -1,6 +1,6 @@
 import { getBrandJson, listBrands } from "@/brands";
 
-const BRAND_PLACEHOLDER = "$BRAND_XML";
+const BRAND_PLACEHOLDER = "$BRAND_JSON";
 
 interface BrandInjectorHook {
   "chat.message": (

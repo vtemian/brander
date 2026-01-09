@@ -114,13 +114,13 @@ describe("Brander plugin integration", () => {
       // Simulate chat.params with brander agent prompt
       const paramsInput = { sessionID: "test-session" };
       const paramsOutput = {
-        system: "Test prompt with $BRAND_XML placeholder",
+        system: "Test prompt with $BRAND_JSON placeholder",
         options: {},
       };
       await plugin["chat.params"](paramsInput, paramsOutput);
 
       // Brand JSON should be injected
-      expect(paramsOutput.system).not.toContain("$BRAND_XML");
+      expect(paramsOutput.system).not.toContain("$BRAND_JSON");
       expect(paramsOutput.system).toContain('"name": "nof1"');
       expect(paramsOutput.system).toContain("#111111");
     });
@@ -140,13 +140,13 @@ describe("Brander plugin integration", () => {
       // Simulate chat.params
       const paramsInput = { sessionID: "test-session-2" };
       const paramsOutput = {
-        system: "Test prompt with $BRAND_XML placeholder",
+        system: "Test prompt with $BRAND_JSON placeholder",
         options: {},
       };
       await plugin["chat.params"](paramsInput, paramsOutput);
 
       // Should show available brands message
-      expect(paramsOutput.system).not.toContain("$BRAND_XML");
+      expect(paramsOutput.system).not.toContain("$BRAND_JSON");
       expect(paramsOutput.system).toContain("No brand specified");
       expect(paramsOutput.system).toContain("nof1");
     });

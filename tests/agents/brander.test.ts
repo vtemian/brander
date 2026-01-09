@@ -1,4 +1,5 @@
-import { describe, it, expect } from "bun:test";
+import { describe, expect, it } from "bun:test";
+
 import { branderAgent } from "../../src/agents/brander";
 
 describe("brander agent", () => {
@@ -25,6 +26,6 @@ describe("brander agent", () => {
   });
 
   it("should have brand context placeholder", () => {
-    expect(branderAgent.prompt).toContain("$BRAND_XML");
+    expect(branderAgent.prompt).toContain("$BRAND_JSON");
   });
 });

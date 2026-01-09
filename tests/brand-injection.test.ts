@@ -22,8 +22,8 @@ describe("Brand context injection", () => {
 
     const branderConfig = config.agent.brander;
 
-    // The prompt should have the $BRAND_XML placeholder (keeping name for backward compat)
-    expect(branderConfig.prompt).toContain("$BRAND_XML");
+    // The prompt should have the $BRAND_JSON placeholder (keeping name for backward compat)
+    expect(branderConfig.prompt).toContain("$BRAND_JSON");
   });
 
   it("should have nof1 brand JSON available", () => {
@@ -41,12 +41,12 @@ describe("Brand injector hook", () => {
   });
 
   describe("chat.params hook", () => {
-    it("should replace $BRAND_XML with brand content when brand name is in message", async () => {
+    it("should replace $BRAND_JSON with brand content when brand name is in message", async () => {
       const hook = createBrandInjectorHook();
 
       const input = { sessionID: "test-session" };
       const output = {
-        system: "Some system prompt with $BRAND_XML placeholder",
+        system: "Some system prompt with $BRAND_JSON placeholder",
       };
 
       // Simulate a message containing the brand name
@@ -54,18 +54,18 @@ describe("Brand injector hook", () => {
 
       await hook["chat.params"](input, output);
 
-      // $BRAND_XML should be replaced with actual brand JSON
-      expect(output.system).not.toContain("$BRAND_XML");
+      // $BRAND_JSON should be replaced with actual brand JSON
+      expect(output.system).not.toContain("$BRAND_JSON");
       expect(output.system).toContain('"name": "nof1"');
       expect(output.system).toContain("#111111"); // ink color from nof1 brand
     });
 
-    it("should replace $BRAND_XML with available brands list when no brand specified", async () => {
+    it("should replace $BRAND_JSON with available brands list when no brand specified", async () => {
       const hook = createBrandInjectorHook();
 
       const input = { sessionID: "test-session" };
       const output = {
-        system: "Some system prompt with $BRAND_XML placeholder",
+        system: "Some system prompt with $BRAND_JSON placeholder",
       };
 
       // No brand specified
@@ -73,18 +73,18 @@ describe("Brand injector hook", () => {
 
       await hook["chat.params"](input, output);
 
-      // $BRAND_XML should be replaced with available brands message
-      expect(output.system).not.toContain("$BRAND_XML");
+      // $BRAND_JSON should be replaced with available brands message
+      expect(output.system).not.toContain("$BRAND_JSON");
       expect(output.system).toContain("No brand specified");
       expect(output.system).toContain("nof1"); // available brand
     });
 
-    it("should replace $BRAND_XML with error message for unknown brand", async () => {
+    it("should replace $BRAND_JSON with error message for unknown brand", async () => {
       const hook = createBrandInjectorHook();
 
       const input = { sessionID: "test-session" };
       const output = {
-        system: "Some system prompt with $BRAND_XML placeholder",
+        system: "Some system prompt with $BRAND_JSON placeholder",
       };
 
       // Unknown brand
@@ -92,13 +92,13 @@ describe("Brand injector hook", () => {
 
       await hook["chat.params"](input, output);
 
-      // $BRAND_XML should be replaced with error message
-      expect(output.system).not.toContain("$BRAND_XML");
+      // $BRAND_JSON should be replaced with error message
+      expect(output.system).not.toContain("$BRAND_JSON");
       expect(output.system).toContain("Brand 'unknown-brand' not found");
       expect(output.system).toContain("nof1"); // suggest available brands
     });
 
-    it("should not modify system prompt without $BRAND_XML placeholder", async () => {
+    it("should not modify system prompt without $BRAND_JSON placeholder", async () => {
       const hook = createBrandInjectorHook();
 
       const input = { sessionID: "test-session" };
@@ -188,12 +188,12 @@ describe("Brand injector hook", () => {
   });
 
   describe("chat.params hook - multiple placeholders", () => {
-    it("should replace ALL $BRAND_XML placeholders, not just the first", async () => {
+    it("should replace ALL $BRAND_JSON placeholders, not just the first", async () => {
       const hook = createBrandInjectorHook();
 
       const input = { sessionID: "test-session" };
       const output = {
-        system: "First $BRAND_XML and second $BRAND_XML placeholder",
+        system: "First $BRAND_JSON and second $BRAND_JSON placeholder",
       };
 
       hook.setCurrentBrandRequest("test-session", "nof1");
@@ -201,7 +201,7 @@ describe("Brand injector hook", () => {
       await hook["chat.params"](input, output);
 
       // Both placeholders should be replaced
-      expect(output.system).not.toContain("$BRAND_XML");
+      expect(output.system).not.toContain("$BRAND_JSON");
       // Should contain brand content twice
       const matches = output.system.match(/"name": "nof1"/g);
       expect(matches?.length).toBe(2);
@@ -214,7 +214,7 @@ describe("Brand injector hook", () => {
 
       const input = { sessionID: "test-session" };
       const output = {
-        system: "Some system prompt with $BRAND_XML placeholder",
+        system: "Some system prompt with $BRAND_JSON placeholder",
       };
 
       // No setCurrentBrandRequest called - simulating no /brand command
@@ -222,7 +222,7 @@ describe("Brand injector hook", () => {
       await hook["chat.params"](input, output);
 
       // Placeholder should be removed or handled gracefully, not left as literal
-      expect(output.system).not.toContain("$BRAND_XML");
+      expect(output.system).not.toContain("$BRAND_JSON");
     });
   });
 
@@ -236,12 +236,12 @@ describe("Brand injector hook", () => {
 
       // Step 2: chat.params is called to build the system prompt
       const paramsOutput = {
-        system: "You are a branding assistant. Brand context: $BRAND_XML",
+        system: "You are a branding assistant. Brand context: $BRAND_JSON",
       };
       await hook["chat.params"]({ sessionID }, paramsOutput);
 
       // Step 3: Verify brand JSON is in system prompt
-      expect(paramsOutput.system).not.toContain("$BRAND_XML");
+      expect(paramsOutput.system).not.toContain("$BRAND_JSON");
       expect(paramsOutput.system).toContain('"name": "nof1"');
       expect(paramsOutput.system).toContain("#111111"); // nof1 ink color
     });
@@ -258,7 +258,7 @@ describe("Brand injector hook", () => {
 
       // Trigger injection via chat.params
       const output = {
-        system: "Brand context: $BRAND_XML",
+        system: "Brand context: $BRAND_JSON",
       };
       await hook["chat.params"]({ sessionID }, output);
 
