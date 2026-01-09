@@ -1,0 +1,554 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Brand Showcase</title>
+  <style>
+    /* Fallback values - overridden when brand loads */
+    :root {
+      --font-sans: system-ui, sans-serif;
+      --font-mono: monospace;
+      --text-sm: 13px;
+      --text-base: 14px;
+      --text-lg: 16px;
+      --line-height-sm: 1.4;
+      --line-height-base: 1.5;
+      --line-height-lg: 1.5;
+      --spacing-1: 0.25rem;
+      --spacing-2: 0.5rem;
+      --spacing-3: 0.75rem;
+      --spacing-4: 1rem;
+      --spacing-6: 1.5rem;
+      --spacing-8: 2rem;
+      --radius-xs: 0.125rem;
+      --radius-sm: 0.25rem;
+      --radius-md: 0.375rem;
+      --radius-lg: 0.5rem;
+      --radius-xl: 0.625rem;
+      --color-primary: #666;
+      --color-interactive: #333;
+      --color-neutral: #888;
+      --color-success: #0a0;
+      --color-warning: #fa0;
+      --color-error: #c00;
+      --color-info: #00f;
+      --color-background: #fff;
+      --color-foreground: #1a1a1a;
+      --color-border: #e5e5e5;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: var(--font-sans);
+      font-size: var(--text-base);
+      line-height: var(--line-height-base);
+      color: var(--color-foreground);
+      background-color: var(--color-background);
+      padding: var(--spacing-8);
+      max-width: 1200px;
+      margin: 0 auto;
+      transition: background-color 0.2s, color 0.2s;
+    }
+
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: var(--spacing-8);
+      padding-bottom: var(--spacing-4);
+      border-bottom: 1px solid var(--color-border);
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: var(--spacing-3);
+    }
+
+    .logo-mark {
+      width: 40px;
+      height: 40px;
+      background: var(--color-primary);
+      border-radius: var(--radius-md);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 600;
+      color: var(--color-foreground);
+      font-size: 12px;
+    }
+
+    h1 { font-size: 24px; font-weight: 600; }
+    .subtitle { font-size: var(--text-sm); color: var(--color-neutral); }
+
+    .header-controls {
+      display: flex;
+      gap: var(--spacing-3);
+      align-items: center;
+    }
+
+    .brand-select {
+      font-family: var(--font-sans);
+      font-size: var(--text-sm);
+      padding: var(--spacing-2) var(--spacing-3);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-md);
+      background: var(--color-background);
+      color: var(--color-foreground);
+    }
+
+    .theme-toggle {
+      background: var(--color-interactive);
+      color: white;
+      border: none;
+      padding: var(--spacing-2) var(--spacing-4);
+      border-radius: var(--radius-md);
+      cursor: pointer;
+      font-family: var(--font-sans);
+      font-size: var(--text-sm);
+      font-weight: 500;
+    }
+
+    .theme-toggle:hover { opacity: 0.9; }
+
+    section { margin-bottom: var(--spacing-8); }
+    h2 { font-size: 18px; font-weight: 600; margin-bottom: var(--spacing-4); }
+    h3 { font-size: var(--text-base); font-weight: 500; margin-bottom: var(--spacing-2); color: var(--color-neutral); }
+    .section-subtitle { margin-bottom: var(--spacing-4); color: var(--color-neutral); font-size: var(--text-sm); }
+
+    .color-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+      gap: var(--spacing-4);
+    }
+
+    .color-swatch {
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      border: 1px solid var(--color-border);
+    }
+
+    .color-preview { height: 80px; }
+    .color-info { padding: var(--spacing-3); background: var(--color-background); }
+    .color-name { font-weight: 500; font-size: var(--text-sm); }
+    .color-value { font-family: var(--font-mono); font-size: 12px; color: var(--color-neutral); }
+    .color-desc { font-size: 11px; color: var(--color-neutral); margin-top: var(--spacing-1); }
+
+    .type-sample {
+      padding: var(--spacing-4);
+      background: var(--color-background);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-lg);
+      margin-bottom: var(--spacing-4);
+    }
+
+    .type-label {
+      font-size: 11px;
+      font-family: var(--font-mono);
+      color: var(--color-neutral);
+      margin-bottom: var(--spacing-2);
+    }
+
+    .type-scale { display: flex; flex-direction: column; gap: var(--spacing-3); }
+    .scale-item { display: flex; align-items: baseline; gap: var(--spacing-4); }
+    .scale-label { font-family: var(--font-mono); font-size: 11px; color: var(--color-neutral); min-width: 80px; }
+
+    .spacing-demo, .radius-demo { display: flex; gap: var(--spacing-4); flex-wrap: wrap; }
+    .spacing-item, .radius-item { display: flex; flex-direction: column; align-items: center; gap: var(--spacing-2); }
+    .spacing-box { background: var(--color-interactive); border-radius: var(--radius-sm); }
+    .spacing-label, .radius-label { font-family: var(--font-mono); font-size: 11px; color: var(--color-neutral); }
+    .radius-box { width: 60px; height: 60px; background: var(--color-primary); border: 2px solid var(--color-foreground); }
+
+    .button-demo { display: flex; gap: var(--spacing-4); flex-wrap: wrap; align-items: center; }
+
+    .btn {
+      font-family: var(--font-sans);
+      font-size: var(--text-base);
+      font-weight: 500;
+      padding: var(--spacing-2) var(--spacing-4);
+      border-radius: var(--radius-md);
+      cursor: pointer;
+      transition: opacity 0.15s;
+    }
+
+    .btn:hover { opacity: 0.9; }
+    .btn-primary { background: var(--color-interactive); color: white; border: none; }
+    .btn-secondary { background: transparent; color: var(--color-interactive); border: 1px solid var(--color-interactive); }
+    .btn-success { background: var(--color-success); color: white; border: none; }
+    .btn-error { background: var(--color-error); color: white; border: none; }
+
+    .card-demo { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: var(--spacing-4); }
+    .card { background: var(--color-background); border: 1px solid var(--color-border); border-radius: var(--radius-lg); padding: var(--spacing-4); }
+    .card-title { font-weight: 600; margin-bottom: var(--spacing-2); }
+    .card-content { color: var(--color-neutral); font-size: var(--text-sm); }
+    .card-footer { margin-top: var(--spacing-4); padding-top: var(--spacing-3); border-top: 1px solid var(--color-border); display: flex; gap: var(--spacing-2); }
+
+    .alert-demo { display: flex; flex-direction: column; gap: var(--spacing-3); }
+    .alert { padding: var(--spacing-3) var(--spacing-4); border-radius: var(--radius-md); font-size: var(--text-sm); }
+    .alert-success { background: color-mix(in srgb, var(--color-success) 15%, var(--color-background)); border-left: 3px solid var(--color-success); }
+    .alert-warning { background: color-mix(in srgb, var(--color-warning) 15%, var(--color-background)); border-left: 3px solid var(--color-warning); }
+    .alert-error { background: color-mix(in srgb, var(--color-error) 15%, var(--color-background)); border-left: 3px solid var(--color-error); }
+    .alert-info { background: color-mix(in srgb, var(--color-info) 15%, var(--color-background)); border-left: 3px solid var(--color-info); }
+
+    .voice-section { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: var(--spacing-4); }
+    .voice-card { background: var(--color-background); border: 1px solid var(--color-border); border-radius: var(--radius-lg); padding: var(--spacing-4); }
+    .voice-card h3 { margin-bottom: var(--spacing-3); }
+    .voice-tone { font-style: italic; color: var(--color-neutral); }
+    .voice-list { list-style: none; }
+    .voice-list li { padding: var(--spacing-2) 0; border-bottom: 1px solid var(--color-border); font-size: var(--text-sm); }
+    .voice-list li:last-child { border-bottom: none; }
+    .do-item::before { content: "\2713"; color: var(--color-success); margin-right: var(--spacing-2); }
+    .dont-item::before { content: "\2717"; color: var(--color-error); margin-right: var(--spacing-2); }
+
+    code { font-family: var(--font-mono); font-size: 12px; background: color-mix(in srgb, var(--color-neutral) 10%, var(--color-background)); padding: 2px 6px; border-radius: var(--radius-sm); }
+
+    footer { margin-top: var(--spacing-8); padding-top: var(--spacing-4); border-top: 1px solid var(--color-border); text-align: center; color: var(--color-neutral); font-size: var(--text-sm); }
+
+    .error-message {
+      text-align: center;
+      padding: 2rem;
+      font-family: system-ui, sans-serif;
+    }
+
+    .error-message h2 { color: #c00; }
+    .error-message p { margin-top: 1rem; color: #666; }
+    .error-message code { background: #f0f0f0; padding: 2px 6px; border-radius: 4px; font-family: monospace; }
+
+    #content { display: none; }
+    #error { display: none; }
+  </style>
+</head>
+<body>
+  <div id="error" class="error-message">
+    <h2>Brand Not Found</h2>
+    <p id="error-text">No brand specified. Use ?b=brandname to load a brand.</p>
+  </div>
+
+  <div id="content">
+    <header>
+      <div class="logo">
+        <div class="logo-mark" id="logo-mark"></div>
+        <div>
+          <h1 id="brand-name"></h1>
+          <p class="subtitle" id="brand-subtitle"></p>
+        </div>
+      </div>
+      <div class="header-controls">
+        <button class="theme-toggle" onclick="toggleTheme()">Toggle Dark Mode</button>
+      </div>
+    </header>
+
+    <section>
+      <h2>Color Palette</h2>
+      <div class="color-grid" id="color-palette"></div>
+    </section>
+
+    <section>
+      <h2>Typography</h2>
+      <div id="typography-samples"></div>
+      <h3>Type Scale</h3>
+      <div class="type-scale" id="type-scale"></div>
+    </section>
+
+    <section>
+      <h2>Spacing</h2>
+      <p id="spacing-info" class="section-subtitle"></p>
+      <div class="spacing-demo" id="spacing-demo"></div>
+    </section>
+
+    <section>
+      <h2>Border Radius</h2>
+      <div class="radius-demo" id="radius-demo"></div>
+    </section>
+
+    <section>
+      <h2>Buttons</h2>
+      <div class="button-demo">
+        <button class="btn btn-primary">Primary</button>
+        <button class="btn btn-secondary">Secondary</button>
+        <button class="btn btn-success">Success</button>
+        <button class="btn btn-error">Destructive</button>
+      </div>
+    </section>
+
+    <section>
+      <h2>Cards</h2>
+      <div class="card-demo">
+        <div class="card">
+          <div class="card-title">Default Card</div>
+          <div class="card-content">Cards use the background color with a subtle border. Padding follows the spacing scale.</div>
+          <div class="card-footer">
+            <button class="btn btn-primary">Action</button>
+            <button class="btn btn-secondary">Cancel</button>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-title">Feature Card</div>
+          <div class="card-content">Use cards to group related content and actions. Keep content concise and direct.</div>
+          <div class="card-footer">
+            <button class="btn btn-secondary">Learn More</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <h2>Alerts</h2>
+      <div class="alert-demo">
+        <div class="alert alert-success">Success: Your changes have been saved.</div>
+        <div class="alert alert-warning">Warning: This action cannot be undone.</div>
+        <div class="alert alert-error">Error: Failed to connect to server.</div>
+        <div class="alert alert-info">Info: New features are available.</div>
+      </div>
+    </section>
+
+    <section id="voice-section" style="display: none;">
+      <h2>Voice & Guidelines</h2>
+      <div class="voice-section" id="voice-content"></div>
+    </section>
+
+    <footer id="footer"></footer>
+  </div>
+
+  <script>
+    const BRANDS = {
+      nof1: {"name":"nof1","version":"1.0","meta":{"target":"web"},"colors":{"palette":[{"name":"primary","value":"#0000ff","description":"Accent primary"},{"name":"secondary","value":"#8b5cf6","description":"Accent secondary"},{"name":"success","value":"#00aa00"},{"name":"warning","value":"#ffaa00"},{"name":"error","value":"#ff0000"}],"semantic":[{"name":"background","light":"#ffffff","dark":"#ffffff"},{"name":"foreground","light":"#000000","dark":"#000000"},{"name":"foreground-muted","light":"#333333","dark":"#333333"},{"name":"foreground-subtle","light":"#666666","dark":"#666666"},{"name":"surface","light":"#ffffff","dark":"#ffffff"},{"name":"surface-elevated","light":"#f8f9fa","dark":"#f8f9fa"},{"name":"surface-hover","light":"#f1f3f4","dark":"#f1f3f4"},{"name":"border","light":"#000000","dark":"#000000"},{"name":"border-subtle","light":"#cccccc","dark":"#cccccc"}]},"typography":{"fonts":[{"role":"mono","family":"IBM Plex Mono","fallback":"monospace"}],"scale":[{"name":"base","size":"1rem","lineHeight":"1.4"},{"name":"sm","size":"0.875rem","lineHeight":"1.25rem"},{"name":"xs","size":"0.75rem","lineHeight":"1rem"},{"name":"lg","size":"1.125rem","lineHeight":"1.75rem"}]},"spacing":{"unit":"0.25rem"},"radius":{"sizes":[{"name":"sm","value":"0.125rem"},{"name":"md","value":"0.25rem"},{"name":"lg","value":"0.5rem"},{"name":"xl","value":"0.75rem"},{"name":"full","value":"9999px"}]},"voice":{"tone":"Terminal, technical, precise","principles":["Monospace everywhere","High contrast","No fluff"]},"guidelines":{"dos":["Use monospace font consistently","Keep borders sharp (black)","Use semantic color names"],"donts":["Mix font families","Use soft/rounded aesthetics","Add unnecessary decoration"]}}
+    };
+
+    function loadBrand() {
+      const params = new URLSearchParams(window.location.search);
+      const brandName = params.get('b');
+      const availableBrands = Object.keys(BRANDS).join(', ');
+
+      if (!brandName) {
+        showError(`No brand specified. Use <code>?b=brandname</code> to load a brand.<br><br>Available: ${availableBrands}`);
+        return;
+      }
+
+      const brand = BRANDS[brandName];
+      if (!brand) {
+        showError(`Brand "${brandName}" not found.<br><br>Available: ${availableBrands}`);
+        return;
+      }
+
+      applyBrand(brand);
+      document.getElementById('content').style.display = 'block';
+    }
+
+    function showError(message) {
+      document.getElementById('error').style.display = 'block';
+      document.getElementById('error-text').innerHTML = message;
+    }
+
+    function applyBrand(brand) {
+      document.title = `${brand.name} Design System`;
+
+      // Logo and header
+      document.getElementById('logo-mark').textContent = brand.name.slice(0, 2).toUpperCase();
+      document.getElementById('brand-name').textContent = brand.name;
+      document.getElementById('brand-subtitle').textContent = `v${brand.version}`;
+      document.getElementById('footer').innerHTML = `<p>${brand.name} Design System &middot; v${brand.version}</p>`;
+
+      // Apply CSS variables
+      const root = document.documentElement;
+
+      // Colors - palette
+      for (const color of brand.colors.palette) {
+        root.style.setProperty(`--color-${color.name}`, color.value);
+      }
+
+      // Colors - semantic (light mode defaults)
+      for (const semantic of brand.colors.semantic) {
+        root.style.setProperty(`--color-${semantic.name}`, semantic.light);
+      }
+
+      // Store dark mode colors for toggle
+      window.darkModeColors = {};
+      for (const semantic of brand.colors.semantic) {
+        window.darkModeColors[semantic.name] = { light: semantic.light, dark: semantic.dark };
+      }
+
+      // Typography
+      const fonts = brand.typography.fonts;
+      const fontFamilies = [];
+      for (const font of fonts) {
+        root.style.setProperty(`--font-${font.role}`, `'${font.family}', ${font.fallback}`);
+        fontFamilies.push(font.family.replace(/ /g, '+'));
+      }
+
+      // Load Google Fonts
+      const fontLink = document.createElement('link');
+      fontLink.rel = 'stylesheet';
+      fontLink.href = `https://fonts.googleapis.com/css2?family=${fontFamilies.map(f => f + ':wght@400;500;600').join('&family=')}&display=swap`;
+      document.head.appendChild(fontLink);
+
+      // Type scale
+      for (const scale of brand.typography.scale) {
+        root.style.setProperty(`--text-${scale.name}`, scale.size);
+        root.style.setProperty(`--line-height-${scale.name}`, scale.lineHeight);
+      }
+
+      // Spacing - set unit and computed multipliers
+      root.style.setProperty('--spacing-unit', brand.spacing.unit);
+      for (const multiplier of [1, 2, 3, 4, 6, 8]) {
+        root.style.setProperty(`--spacing-${multiplier}`, `calc(${brand.spacing.unit} * ${multiplier})`);
+      }
+
+      // Radius
+      for (const radius of brand.radius.sizes) {
+        root.style.setProperty(`--radius-${radius.name}`, radius.value);
+      }
+
+      // Render dynamic sections
+      renderColorPalette(brand.colors.palette);
+      renderTypography(brand.typography);
+      renderSpacing(brand.spacing);
+      renderRadius(brand.radius);
+
+      if (brand.voice || brand.guidelines) {
+        renderVoiceAndGuidelines(brand.voice, brand.guidelines);
+      }
+
+      // Apply system preference
+      if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        applyDarkMode(true);
+      }
+    }
+
+    function renderColorPalette(palette) {
+      const container = document.getElementById('color-palette');
+      container.innerHTML = palette.map(color => `
+        <div class="color-swatch">
+          <div class="color-preview" style="background: ${color.value};"></div>
+          <div class="color-info">
+            <div class="color-name">${capitalize(color.name)}</div>
+            <div class="color-value">${color.value}</div>
+            ${color.description ? `<div class="color-desc">${color.description}</div>` : ''}
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function renderTypography(typography) {
+      const container = document.getElementById('typography-samples');
+      container.innerHTML = typography.fonts.map(font => `
+        <div class="type-sample" style="font-family: var(--font-${font.role});">
+          <div class="type-label">${font.family} (${capitalize(font.role)}) - ${font.role === 'sans' ? 'Primary typeface' : 'Code and data'}</div>
+          <p>The quick brown fox jumps over the lazy dog. 0123456789</p>
+        </div>
+      `).join('');
+
+      const scaleContainer = document.getElementById('type-scale');
+      scaleContainer.innerHTML = typography.scale.map(scale => `
+        <div class="scale-item">
+          <span class="scale-label">${scale.name} (${scale.size})</span>
+          <span style="font-size: var(--text-${scale.name});">Sample text at ${scale.name} size</span>
+        </div>
+      `).join('');
+    }
+
+    function renderSpacing(spacing) {
+      document.getElementById('spacing-info').innerHTML = `Base unit: <code>${spacing.unit}</code>`;
+
+      const multipliers = [1, 2, 3, 4, 6, 8];
+      const unit = parseFloat(spacing.unit) * 16; // Convert rem to px (assuming 16px base)
+
+      const container = document.getElementById('spacing-demo');
+      container.innerHTML = multipliers.map(m => {
+        const px = Math.round(unit * m);
+        return `
+          <div class="spacing-item">
+            <div class="spacing-box" style="width: ${px}px; height: 24px;"></div>
+            <span class="spacing-label">${m} (${px}px)</span>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function renderRadius(radius) {
+      const container = document.getElementById('radius-demo');
+      container.innerHTML = radius.sizes.map(r => {
+        const px = Math.round(parseFloat(r.value) * 16);
+        return `
+          <div class="radius-item">
+            <div class="radius-box" style="border-radius: var(--radius-${r.name});"></div>
+            <span class="radius-label">${r.name} (${px}px)</span>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function renderVoiceAndGuidelines(voice, guidelines) {
+      const section = document.getElementById('voice-section');
+      const container = document.getElementById('voice-content');
+      let html = '';
+
+      if (voice) {
+        html += `
+          <div class="voice-card">
+            <h3>Tone</h3>
+            <p class="voice-tone">"${voice.tone}"</p>
+            ${voice.principles ? `
+              <ul class="voice-list" style="margin-top: var(--spacing-3);">
+                ${voice.principles.map(p => `<li>${p}</li>`).join('')}
+              </ul>
+            ` : ''}
+          </div>
+        `;
+      }
+
+      if (guidelines?.dos) {
+        html += `
+          <div class="voice-card">
+            <h3>Do's</h3>
+            <ul class="voice-list">
+              ${guidelines.dos.map(d => `<li class="do-item">${d}</li>`).join('')}
+            </ul>
+          </div>
+        `;
+      }
+
+      if (guidelines?.donts) {
+        html += `
+          <div class="voice-card">
+            <h3>Don'ts</h3>
+            <ul class="voice-list">
+              ${guidelines.donts.map(d => `<li class="dont-item">${d}</li>`).join('')}
+            </ul>
+          </div>
+        `;
+      }
+
+      if (html) {
+        container.innerHTML = html;
+        section.style.display = 'block';
+      }
+    }
+
+    function capitalize(str) {
+      return str.charAt(0).toUpperCase() + str.slice(1);
+    }
+
+    function toggleTheme() {
+      const html = document.documentElement;
+      const isDark = html.getAttribute('data-theme') === 'dark';
+      applyDarkMode(!isDark);
+    }
+
+    function applyDarkMode(dark) {
+      const html = document.documentElement;
+      html.setAttribute('data-theme', dark ? 'dark' : '');
+
+      if (window.darkModeColors) {
+        for (const [name, colors] of Object.entries(window.darkModeColors)) {
+          html.style.setProperty(`--color-${name}`, dark ? colors.dark : colors.light);
+        }
+      }
+    }
+
+    loadBrand();
+  </script>
+</body>
+</html>

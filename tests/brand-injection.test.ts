@@ -31,7 +31,7 @@ describe("Brand context injection", () => {
 
     expect(json).toBeDefined();
     expect(json).toContain('"name": "nof1"');
-    expect(json).toContain("#dcde8d"); // primary color
+    expect(json).toContain("#0000ff"); // primary color
   });
 });
 
@@ -57,7 +57,7 @@ describe("Brand injector hook", () => {
       // $BRAND_XML should be replaced with actual brand JSON
       expect(output.system).not.toContain("$BRAND_XML");
       expect(output.system).toContain('"name": "nof1"');
-      expect(output.system).toContain("#dcde8d"); // primary color from nof1 brand
+      expect(output.system).toContain("#0000ff"); // primary color from nof1 brand
     });
 
     it("should replace $BRAND_XML with available brands list when no brand specified", async () => {
@@ -243,7 +243,7 @@ describe("Brand injector hook", () => {
       // Step 3: Verify brand JSON is in system prompt
       expect(paramsOutput.system).not.toContain("$BRAND_XML");
       expect(paramsOutput.system).toContain('"name": "nof1"');
-      expect(paramsOutput.system).toContain("#dcde8d"); // nof1 primary color
+      expect(paramsOutput.system).toContain("#0000ff"); // nof1 primary color
     });
   });
 

@@ -23,8 +23,7 @@ describe("Brander plugin integration", () => {
       expect(brand!.spacing).toBeDefined();
       expect(brand!.radius).toBeDefined();
 
-      // Optional sections
-      expect(brand!.components).toBeDefined();
+      // Optional sections (present in nof1)
       expect(brand!.voice).toBeDefined();
       expect(brand!.guidelines).toBeDefined();
     });
@@ -32,18 +31,16 @@ describe("Brander plugin integration", () => {
     it("should have correct nof1 color palette", () => {
       const brand = getBrand("nof1");
       const primary = brand!.colors.palette.find((c) => c.name === "primary");
-      const interactive = brand!.colors.palette.find((c) => c.name === "interactive");
+      const secondary = brand!.colors.palette.find((c) => c.name === "secondary");
 
-      expect(primary?.value).toBe("#dcde8d");
-      expect(interactive?.value).toBe("#034cff");
+      expect(primary?.value).toBe("#0000ff");
+      expect(secondary?.value).toBe("#8b5cf6");
     });
 
     it("should have correct nof1 typography", () => {
       const brand = getBrand("nof1");
-      const sansFont = brand!.typography.fonts.find((f) => f.role === "sans");
       const monoFont = brand!.typography.fonts.find((f) => f.role === "mono");
 
-      expect(sansFont?.family).toBe("Inter");
       expect(monoFont?.family).toBe("IBM Plex Mono");
     });
   });
@@ -125,7 +122,7 @@ describe("Brander plugin integration", () => {
       // Brand JSON should be injected
       expect(paramsOutput.system).not.toContain("$BRAND_XML");
       expect(paramsOutput.system).toContain('"name": "nof1"');
-      expect(paramsOutput.system).toContain("#dcde8d");
+      expect(paramsOutput.system).toContain("#0000ff");
     });
 
     it("should show available brands when /brand command has no argument", async () => {

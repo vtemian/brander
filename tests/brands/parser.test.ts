@@ -10,7 +10,7 @@ const MINIMAL_BRAND_JSON = JSON.stringify({
     target: "web",
   },
   colors: {
-    palette: [{ name: "primary", value: "#dcde8d", description: "Primary color" }],
+    palette: [{ name: "primary", value: "#0000ff", description: "Primary color" }],
     semantic: [{ name: "background", light: "#ffffff", dark: "#1a1a1a" }],
   },
   typography: {
@@ -38,7 +38,7 @@ describe("parseBrandJson", () => {
 
     expect(brand.colors.palette).toHaveLength(1);
     expect(brand.colors.palette[0].name).toBe("primary");
-    expect(brand.colors.palette[0].value).toBe("#dcde8d");
+    expect(brand.colors.palette[0].value).toBe("#0000ff");
     expect(brand.colors.palette[0].description).toBe("Primary color");
 
     expect(brand.colors.semantic).toHaveLength(1);
