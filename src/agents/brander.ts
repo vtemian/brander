@@ -3,7 +3,7 @@ import type { AgentConfig } from "@opencode-ai/sdk";
 export const branderAgent: AgentConfig = {
   description: "Analyzes projects and generates brand transformation plans",
   mode: "primary",
-  model: "anthropic/claude-sonnet-4-20250514",
+  model: "anthropic/claude-opus-4-5",
   temperature: 0.1,
   tools: {
     write: false,
