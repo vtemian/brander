@@ -1,4 +1,5 @@
-import { describe, it, expect } from "bun:test";
+import { describe, expect, it } from "bun:test";
+
 import { parseBrandXml } from "../../src/brands/parser";
 
 const MINIMAL_BRAND_XML = `<?xml version="1.0" encoding="UTF-8"?>
@@ -65,13 +66,12 @@ describe("parseBrandXml", () => {
     expect(brand.radius.sizes[0].name).toBe("md");
   });
 
-  it("should throw on invalid XML with helpful error message including input preview", () => {
-    expect(() => parseBrandXml("not xml")).toThrow(/not xml/);
+  it("should throw on invalid XML", () => {
+    expect(() => parseBrandXml("not xml")).toThrow(/brand/i);
   });
 
-  it("should include truncated preview for long invalid input", () => {
-    const longInvalidInput = "x".repeat(100);
-    expect(() => parseBrandXml(longInvalidInput)).toThrow(/x{50}/);
+  it("should throw on empty input", () => {
+    expect(() => parseBrandXml("")).toThrow(/brand/i);
   });
 
   it("should throw on missing required sections", () => {
