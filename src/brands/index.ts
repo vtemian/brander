@@ -1,4 +1,4 @@
-import { readdirSync, readFileSync } from "node:fs";
+import { existsSync, readdirSync, readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -18,8 +18,15 @@ function getBrandsDir(): string {
   const currentFile = fileURLToPath(import.meta.url);
   const currentDir = dirname(currentFile);
 
-  // Brand JSONs live in top-level brands/ directory
-  // From src/brands/ or dist/, go up to project root
+  // When bundled: brands/ is copied to dist/brands/
+  // The bundle is at dist/index.js, so brands/ is at dist/brands/
+  const bundledPath = join(currentDir, "brands");
+  if (existsSync(bundledPath)) {
+    return bundledPath;
+  }
+
+  // When running from source (dev/tests): go up to project root
+  // From src/brands/, go up two levels to project root
   const projectRoot = join(currentDir, "..", "..");
   return join(projectRoot, "brands");
 }
