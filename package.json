@@ -31,8 +31,12 @@
     "branding",
     "design-system"
   ],
-  "author": "",
+  "author": "vtemian",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/vtemian/brander.git"
+  },
   "dependencies": {
     "@opencode-ai/plugin": "^1.0.224",
     "valibot": "^1.0.0"

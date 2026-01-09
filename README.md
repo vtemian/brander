@@ -1,102 +1,141 @@
-# Brander
+# brander
 
-OpenCode plugin for applying curated brand guidelines to web projects.
+An OpenCode plugin that generates brand transformation plans for web projects.
 
-## What it does
+## The Problem
 
-Brander analyzes your web project's current styling (CSS, Tailwind, components) and generates a transformation plan to match a target brand. It doesn't modify files directly - it outputs an actionable checklist.
+Applying a design system to an existing project is tedious:
 
-## Installation
-
-```bash
-# Add to your OpenCode config
-opencode plugin add brander
+```
+- Open brand guidelines PDF
+- Find your CSS variables file
+- Manually map colors one by one
+- Check Tailwind config
+- Update component styles
+- Miss half the places that need changes
+- Repeat when you find inconsistencies
 ```
 
-## Usage
+Hours of manual comparison. Easy to miss things.
 
-```bash
-# List available brands and pick one
-/brand
+## The Solution
 
-# Apply a specific brand
+**An agent that analyzes your codebase and generates a complete transformation plan.**
+
+When you run `/brand nof1`, brander:
+
+- Scans your CSS, Tailwind config, and components
+- Compares against the target brand definition
+- Outputs an actionable checklist with exact file paths and values
+
+**Hours of manual work → 2 minutes of agent analysis.**
+
+## Quick Start
+
+Add to `~/.config/opencode/opencode.json`:
+
+```json
+{ "plugin": ["brander"] }
+```
+
+Run the brand command:
+
+```
 /brand nof1
 ```
 
-## Available Brands
+Get a transformation plan you can execute.
 
-- **nof1** - OpenCode OC-1 design system (Inter font, yuzu/cobalt colors)
+## The Output
 
-## What the plan includes
-
-- **Colors** - CSS variables, Tailwind config changes, semantic mappings
-- **Typography** - Font families, sizes, line heights
-- **Spacing & Radius** - Base units, border radius scale
-- **Components** - Button, card, input styling updates
-- **Voice & Tone** - Copy guidelines (if defined in brand)
-
-## Example output
+A markdown checklist with specific, actionable items:
 
 ```markdown
 # Brand Transformation Plan: nof1
 
 ## Summary
-- **Current state**: Tailwind with default palette, system fonts
-- **Target brand**: nof1 (OpenCode OC-1)
-- **Estimated scope**: 12 files, ~45 changes
+- **Current state**: Dark gradient theme, Poppins font
+- **Target brand**: nof1 (neutral dashboard)
+- **Estimated scope**: 8 files, ~35 changes
 
 ## 1. Colors
 
-### CSS Variables (src/styles/variables.css)
-- [ ] Add `--color-primary: #dcde8d`
-- [ ] Add `--color-interactive: #034cff`
+### CSS Variables (src/styles/globals.css)
+- [ ] Change `--background: #0f172a` → `#ffffff`
+- [ ] Change `--foreground: #f8fafc` → `#111111`
+- [ ] Add `--color-muted: #6b7280`
 
 ### Tailwind Config (tailwind.config.js)
-- [ ] Add `colors.primary: '#dcde8d'`
+- [ ] Update `colors.background` to `#ffffff`
+- [ ] Add semantic color tokens
+
+## 2. Typography
+
+- [ ] Replace Poppins with system-ui
+- [ ] Add serif font for display headings
 ...
+```
+
+## Available Brands
+
+| Brand | Style | Use Case |
+|-------|-------|----------|
+| **nof1** | Neutral dashboard, chart-focused | Data visualization apps |
+
+## How It Works
+
+### 3 Agents
+
+| Agent | Job |
+|-------|-----|
+| **brander** | Orchestrates analysis, generates plan |
+| **style-analyzer** | Scans CSS, Tailwind, design tokens |
+| **component-scanner** | Finds UI components and their styling |
+
+### The Flow
+
+1. You specify a target brand
+2. Subagents analyze your project in parallel
+3. Brander compares findings against brand definition
+4. Transformation plan generated with exact changes
+
+## Adding Brands
+
+Brands are JSON files in `brands/`. Required fields:
+
+```json
+{
+  "name": "my-brand",
+  "version": "1.0",
+  "meta": { "target": "web" },
+  "colors": { "palette": [...], "semantic": [...] },
+  "typography": { "fonts": [...], "scale": [...] },
+  "spacing": { "unit": "0.25rem" },
+  "radius": { "sizes": [...] }
+}
+```
+
+Optional: `dataViz`, `states`, `voice`, `guidelines`
+
+## Configuration
+
+Optional `~/.config/opencode/brander.json`:
+
+```json
+{
+  "agents": {
+    "brander": { "model": "anthropic/claude-sonnet-4" }
+  }
+}
 ```
 
 ## Development
 
 ```bash
-# Install dependencies
 bun install
-
-# Run tests
-bun test
-
-# Build
 bun run build
-
-# Typecheck
-bun run typecheck
+bun test
 ```
-
-## Architecture
-
-```
-src/
-├── index.ts              # Plugin entry point
-├── agents/
-│   ├── brander.ts        # Primary agent - orchestrates analysis
-│   ├── style-analyzer.ts # Subagent - CSS/Tailwind analysis
-│   └── component-scanner.ts # Subagent - UI component analysis
-├── brands/
-│   ├── schema.ts         # TypeScript types for brand definitions
-│   ├── parser.ts         # XML parser for brand files
-│   ├── index.ts          # Brand loader
-│   └── nof1.xml          # Bundled nof1 brand definition
-└── hooks/
-    └── brand-injector.ts # Injects brand XML into agent context
-```
-
-## Adding brands
-
-Brands are defined in XML format in `src/brands/`. See `nof1.xml` for the full schema.
-
-Required sections: `meta`, `colors`, `typography`, `spacing`, `radius`
-
-Optional sections: `components`, `voice`, `guidelines`
 
 ## License
 
