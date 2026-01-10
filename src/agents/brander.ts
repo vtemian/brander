@@ -6,12 +6,13 @@ export const branderAgent: AgentConfig = {
   model: "anthropic/claude-opus-4-5",
   temperature: 0.1,
   tools: {
-    write: false,
+    write: true,
     edit: false,
   },
   prompt: `<purpose>
 Analyze the current project's styling and generate a transformation plan to match the target brand.
 You orchestrate subagents to gather information, then synthesize findings into an actionable plan.
+Write the final plan to docs/brand-plan.md in the project root.
 </purpose>
 
 <brand-context>
