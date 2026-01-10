@@ -11,8 +11,8 @@ describe("brander agent", () => {
     expect(branderAgent.model).toContain("opus");
   });
 
-  it("should have read-only tools", () => {
-    expect(branderAgent.tools?.write).toBe(false);
+  it("should have write enabled but edit disabled", () => {
+    expect(branderAgent.tools?.write).toBe(true);
     expect(branderAgent.tools?.edit).toBe(false);
   });
 

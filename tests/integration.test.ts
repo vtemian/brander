@@ -58,8 +58,8 @@ describe("Brander plugin integration", () => {
       expect(agents["component-scanner"].tools?.edit).toBe(false);
     });
 
-    it("should have brander with read-only tools", () => {
-      expect(agents.brander.tools?.write).toBe(false);
+    it("should have brander with write enabled but edit disabled", () => {
+      expect(agents.brander.tools?.write).toBe(true);
       expect(agents.brander.tools?.edit).toBe(false);
     });
   });
