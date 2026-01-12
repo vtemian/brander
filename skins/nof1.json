@@ -4,9 +4,13 @@
   "meta": {
     "target": "web",
     "confidence": {
-      "high": ["neutral UI (white bg, dark text)", "categorical chart colors (multi-series)"],
-      "medium": ["serif display for wordmark/brand mark", "subtle borders and rounding"],
-      "unknown": ["dark mode support", "exact display/ui font families", "exact hex values from CSS"]
+      "high": [
+        "neutral UI (white bg, dark text)",
+        "categorical chart colors (multi-series)",
+        "IBM Plex Mono for display/mono"
+      ],
+      "medium": ["subtle borders and rounding"],
+      "unknown": ["dark mode support", "exact ui font family", "exact hex values from CSS"]
     }
   },
   "colors": {
@@ -66,9 +70,9 @@
     "fonts": [
       {
         "role": "display",
-        "family": "serif",
-        "fallback": "Georgia, 'Times New Roman', serif",
-        "usage": "Brand mark / hero headings (serif look in public visuals)"
+        "family": "'IBM Plex Mono'",
+        "fallback": "ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace",
+        "usage": "Brand mark / hero headings"
       },
       {
         "role": "ui",
