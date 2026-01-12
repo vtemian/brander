@@ -21,14 +21,22 @@ export function createSkinInjectorHook(): SkinInjectorHook {
   const skinRequests = new Map<string, string | null>();
 
   function extractSkinFromMessage(text: string): string | null | undefined {
-    // Look for /skin command pattern at start of message only
+    // Look for /skin command pattern at start of message
     const skinMatch = text.match(/^\/skin\s*(\S*)/);
-    if (!skinMatch) {
-      return undefined; // Not a /skin command
+    if (skinMatch) {
+      const skinArg = skinMatch[1]?.trim();
+      return skinArg || null; // null if no argument, string if argument present
     }
 
-    const skinArg = skinMatch[1]?.trim();
-    return skinArg || null; // null if no argument, string if argument present
+    // Also check for expanded command template with "User request:" pattern
+    // This handles the case where OpenCode expands the command template before the hook runs
+    const userRequestMatch = text.match(/User request:\s*(\S+)/);
+    if (userRequestMatch) {
+      const skinArg = userRequestMatch[1]?.trim();
+      return skinArg || null;
+    }
+
+    return undefined; // Not a skin command
   }
 
   function generateSkinContent(skinName: string | null | undefined): string {

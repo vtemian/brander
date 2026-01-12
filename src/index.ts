@@ -54,8 +54,7 @@ ${skinList}
 
 User request: $ARGUMENTS
 
-If no skin is specified, ask the user to choose from the available skins.
-If a skin is specified, load its definition and proceed with analysis.`;
+The skin JSON is already injected into your system prompt - do not try to read skin files from disk.`;
 }
 
 export default ReskinPlugin;

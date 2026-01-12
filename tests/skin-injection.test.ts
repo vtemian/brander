@@ -172,6 +172,33 @@ describe("Skin injector hook", () => {
       expect(hook.getCurrentSkinRequest("test-session")).toBeUndefined();
     });
 
+    it("should extract skin name from expanded command template", async () => {
+      const hook = createSkinInjectorHook();
+
+      const input = { sessionID: "test-session" };
+      // This is what the message looks like after OpenCode expands the command template
+      const output = {
+        parts: [
+          {
+            type: "text",
+            text: `Analyze this project and generate a skin transformation plan.
+
+Available skins:
+- nof1
+
+User request: nof1
+
+The skin JSON is already injected into your system prompt.`,
+          },
+        ],
+      };
+
+      await hook["chat.message"](input, output);
+
+      // Should extract skin name from "User request:" line
+      expect(hook.getCurrentSkinRequest("test-session")).toBe("nof1");
+    });
+
     it("should isolate skin requests per session", async () => {
       const hook = createSkinInjectorHook();
 
