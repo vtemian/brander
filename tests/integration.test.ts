@@ -99,7 +99,7 @@ describe("Reskin plugin integration", () => {
   });
 
   describe("Skin JSON injection end-to-end", () => {
-    it("should inject skin JSON when /skin command is used with skin name", async () => {
+    it("should inject skin JSON into message when /skin command is used", async () => {
       const pluginModule = await import("../src/index");
       const mockCtx = { cwd: () => "/test/project" };
       const plugin = await pluginModule.default(mockCtx);
@@ -111,18 +111,11 @@ describe("Reskin plugin integration", () => {
       };
       await plugin["chat.message"](messageInput, messageOutput);
 
-      // Simulate chat.params with reskin agent prompt
-      const paramsInput = { sessionID: "test-session" };
-      const paramsOutput = {
-        system: "Test prompt with $SKIN_JSON placeholder",
-        options: {},
-      };
-      await plugin["chat.params"](paramsInput, paramsOutput);
-
-      // Skin JSON should be injected
-      expect(paramsOutput.system).not.toContain("$SKIN_JSON");
-      expect(paramsOutput.system).toContain('"name": "nof1"');
-      expect(paramsOutput.system).toContain("#111111");
+      // Skin JSON should be injected into the message
+      expect(messageOutput.parts.length).toBe(2);
+      expect(messageOutput.parts[1].text).toContain("<skin-definition");
+      expect(messageOutput.parts[1].text).toContain('"name": "nof1"');
+      expect(messageOutput.parts[1].text).toContain("#111111");
     });
 
     it("should show available skins when /skin command has no argument", async () => {
@@ -137,18 +130,10 @@ describe("Reskin plugin integration", () => {
       };
       await plugin["chat.message"](messageInput, messageOutput);
 
-      // Simulate chat.params
-      const paramsInput = { sessionID: "test-session-2" };
-      const paramsOutput = {
-        system: "Test prompt with $SKIN_JSON placeholder",
-        options: {},
-      };
-      await plugin["chat.params"](paramsInput, paramsOutput);
-
-      // Should show available skins message
-      expect(paramsOutput.system).not.toContain("$SKIN_JSON");
-      expect(paramsOutput.system).toContain("No skin specified");
-      expect(paramsOutput.system).toContain("nof1");
+      // Should show available skins message in the message
+      expect(messageOutput.parts.length).toBe(2);
+      expect(messageOutput.parts[1].text).toContain("No skin specified");
+      expect(messageOutput.parts[1].text).toContain("nof1");
     });
   });
 });
