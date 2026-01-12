@@ -8,14 +8,15 @@ An OpenCode plugin that generates brand transformation plans for web projects.
 
 https://github.com/user-attachments/assets/1baafe10-f259-45f3-8fca-a203f41cc0ca
 
-
-## Demo
-
-See the transformation in action:
-
 | Before | After |
 |--------|-------|
 | [Original DataFlow](https://htmlpreview.github.io/?https://github.com/vtemian/brander/blob/main/example/before.html) | [nof1 Brand](https://htmlpreview.github.io/?https://github.com/vtemian/brander/blob/main/example/after.html) |
+
+## Available Brands
+
+| Brand | Style | Preview |
+|-------|-------|---------|
+| `nof1` | Neutral dashboard, chart-focused | [View](https://htmlpreview.github.io/?https://github.com/vtemian/brander/blob/main/brands/brand.html#b=nof1) |
 
 ## Quick Start
 
@@ -51,12 +52,6 @@ The output is a markdown plan you can execute:
 ### Tailwind Config (tailwind.config.js)
 - [ ] Update `colors.background` to `#ffffff`
 ```
-
-## Available Brands
-
-| Brand | Style | Preview |
-|-------|-------|---------|
-| `nof1` | Neutral dashboard, chart-focused | [View](https://htmlpreview.github.io/?https://github.com/vtemian/brander/blob/main/brands/brand.html#b=nof1) |
 
 ## Architecture: 3 Agents
 
