@@ -9,7 +9,11 @@ An OpenCode plugin that generates skin transformation plans for web projects.
 /skin nof1
 ```
 
-https://github.com/user-attachments/assets/1baafe10-f259-45f3-8fca-a203f41cc0ca
+
+
+https://github.com/user-attachments/assets/c18e0fa7-971f-4b9e-a17c-0923356e6747
+
+
 
 | Before | After |
 |--------|-------|
