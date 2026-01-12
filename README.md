@@ -2,7 +2,12 @@
 
 An OpenCode plugin that generates brand transformation plans for web projects.
 
-**Hours of manual brand comparison → 2 minutes of agent analysis.**
+```
+/brand nof1
+```
+
+https://github.com/user-attachments/assets/1baafe10-f259-45f3-8fca-a203f41cc0ca
+
 
 ## Demo
 
