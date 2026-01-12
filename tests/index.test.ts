@@ -1,6 +1,6 @@
 import { beforeAll, describe, expect, it } from "bun:test";
 
-describe("Brander plugin", () => {
+describe("Reskin plugin", () => {
   let pluginModule: any;
 
   beforeAll(async () => {
@@ -37,7 +37,7 @@ describe("Plugin config", () => {
     await plugin.config(config);
 
     expect(config.command.brand).toBeDefined();
-    expect(config.command.brand.agent).toBe("brander");
+    expect(config.command.brand.agent).toBe("reskin");
   });
 
   it("should register all agents", async () => {
@@ -52,7 +52,7 @@ describe("Plugin config", () => {
 
     await plugin.config(config);
 
-    expect(config.agent.brander).toBeDefined();
+    expect(config.agent.reskin).toBeDefined();
     expect(config.agent["style-analyzer"]).toBeDefined();
     expect(config.agent["component-scanner"]).toBeDefined();
   });

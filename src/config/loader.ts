@@ -7,21 +7,21 @@ import * as v from "valibot";
 
 import type { AGENTS } from "@/agents";
 
-import { type BranderConfig, BranderConfigSchema } from "./schema";
+import { type ReskinConfig, ReskinConfigSchema } from "./schema";
 
-export type { AgentOverride, BranderConfig } from "./schema";
+export type { AgentOverride, ReskinConfig } from "./schema";
 
 /**
- * Load raw user configuration from ~/.config/opencode/brander.json
+ * Load raw user configuration from ~/.config/opencode/opencode-reskin.json
  */
-async function load(configDir?: string): Promise<BranderConfig | null> {
+async function load(configDir?: string): Promise<ReskinConfig | null> {
   const baseDir = configDir ?? join(homedir(), ".config", "opencode");
-  const configPath = join(baseDir, "brander.json");
+  const configPath = join(baseDir, "opencode-reskin.json");
 
   try {
     const content = await readFile(configPath, "utf-8");
     const parsed = JSON.parse(content);
-    const result = v.safeParse(BranderConfigSchema, parsed);
+    const result = v.safeParse(ReskinConfigSchema, parsed);
 
     if (!result.success) {
       return null;

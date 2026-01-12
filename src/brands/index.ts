@@ -50,11 +50,11 @@ export async function loadBrands(): Promise<void> {
         brands.set(brand.name, brand);
         brandJson.set(brand.name, json);
       } catch (err) {
-        console.warn(`[brander] Failed to parse ${file}:`, err);
+        console.warn(`[opencode-reskin] Failed to parse ${file}:`, err);
       }
     }
   } catch (err) {
-    console.warn(`[brander] Failed to load brands from ${brandsDir}:`, err);
+    console.warn(`[opencode-reskin] Failed to load brands from ${brandsDir}:`, err);
   }
 }
 

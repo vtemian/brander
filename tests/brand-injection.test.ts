@@ -13,17 +13,17 @@ describe("Brand context injection", () => {
     const mockCtx = { cwd: () => "/test/project" };
     const plugin = await pluginModule.default(mockCtx);
 
-    // Get the brander agent config
+    // Get the reskin agent config
     const config: any = {
       agent: {},
       command: {},
     };
     await plugin.config(config);
 
-    const branderConfig = config.agent.brander;
+    const reskinConfig = config.agent.reskin;
 
     // The prompt should have the $BRAND_JSON placeholder (keeping name for backward compat)
-    expect(branderConfig.prompt).toContain("$BRAND_JSON");
+    expect(reskinConfig.prompt).toContain("$BRAND_JSON");
   });
 
   it("should have nof1 brand JSON available", () => {

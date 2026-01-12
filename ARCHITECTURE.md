@@ -1,8 +1,8 @@
-# Brander Architecture
+# Reskin Architecture
 
 ## Overview
 
-Brander is an OpenCode plugin that analyzes web projects and generates brand transformation plans. It reads brand definitions from XML files and uses AI agents to analyze a project's current styling (CSS, Tailwind, components), then outputs an actionable checklist to match the target brand.
+Reskin is an OpenCode plugin that analyzes web projects and generates brand transformation plans. It reads brand definitions from XML files and uses AI agents to analyze a project's current styling (CSS, Tailwind, components), then outputs an actionable checklist to match the target brand.
 
 ## Tech Stack
 
@@ -21,12 +21,12 @@ Brander is an OpenCode plugin that analyzes web projects and generates brand tra
 ## Directory Structure
 
 ```
-brander/
+reskin/
 ├── src/
 │   ├── index.ts              # Plugin entry point, registers agents/commands/hooks
 │   ├── agents/               # AI agent configurations
 │   │   ├── index.ts          # Agent registry and exports
-│   │   ├── brander.ts        # Primary orchestrator agent
+│   │   ├── reskin.ts        # Primary orchestrator agent
 │   │   ├── style-analyzer.ts # CSS/Tailwind analysis subagent
 │   │   └── component-scanner.ts # UI component analysis subagent
 │   ├── brands/               # Brand definition system
@@ -95,15 +95,15 @@ brander/
 
 | Agent | Mode | Purpose |
 |-------|------|---------|
-| `brander` | primary | Orchestrates analysis, spawns subagents, generates plan |
+| `reskin` | primary | Orchestrates analysis, spawns subagents, generates plan |
 | `style-analyzer` | subagent | Analyzes CSS, Tailwind, design tokens |
 | `component-scanner` | subagent | Scans UI components, identifies patterns |
 
 **Agent Workflow:**
 1. User invokes `/brand [name]`
-2. `brander` agent spawns `style-analyzer` and `component-scanner` in parallel
+2. `reskin` agent spawns `style-analyzer` and `component-scanner` in parallel
 3. Subagents return findings
-4. `brander` compares findings against brand definition
+4. `reskin` compares findings against brand definition
 5. Outputs transformation checklist
 
 ### 4. Hooks Module (`src/hooks/`)
@@ -134,13 +134,13 @@ brander/
 ┌─────────────────────────────────────────────────────────────────────────┐
 │  chat.params hook                                                       │
 │  - Retrieves brand XML via getBrandXml("nof1")                          │
-│  - Replaces $BRAND_XML in brander agent prompt                          │
+│  - Replaces $BRAND_XML in reskin agent prompt                          │
 │  - Clears session state                                                 │
 └─────────────────────────────────────────────────────────────────────────┘
                                     │
                                     ▼
 ┌─────────────────────────────────────────────────────────────────────────┐
-│  brander agent (primary)                                                │
+│  reskin agent (primary)                                                │
 │  - Has brand XML in system prompt                                       │
 │  - Spawns subagents in parallel                                         │
 └─────────────────────────────────────────────────────────────────────────┘
@@ -156,7 +156,7 @@ brander/
                     └───────────────┬───────────────┘
                                     ▼
 ┌─────────────────────────────────────────────────────────────────────────┐
-│  brander agent                                                          │
+│  reskin agent                                                          │
 │  - Compares findings vs brand definition                                │
 │  - Generates transformation plan                                        │
 │  - Outputs actionable checklist                                         │

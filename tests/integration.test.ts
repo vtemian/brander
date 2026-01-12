@@ -3,7 +3,7 @@ import { beforeAll, describe, expect, it } from "bun:test";
 import { agents, PRIMARY_AGENT_NAME } from "../src/agents";
 import { getBrand, loadBrands } from "../src/brands";
 
-describe("Brander plugin integration", () => {
+describe("Reskin plugin integration", () => {
   beforeAll(async () => {
     await loadBrands();
   });
@@ -46,9 +46,9 @@ describe("Brander plugin integration", () => {
   });
 
   describe("Agent configuration", () => {
-    it("should have brander as primary agent", () => {
-      expect(PRIMARY_AGENT_NAME).toBe("brander");
-      expect(agents.brander.mode).toBe("primary");
+    it("should have reskin as primary agent", () => {
+      expect(PRIMARY_AGENT_NAME).toBe("reskin");
+      expect(agents.reskin.mode).toBe("primary");
     });
 
     it("should have subagents with read-only tools", () => {
@@ -58,9 +58,9 @@ describe("Brander plugin integration", () => {
       expect(agents["component-scanner"].tools?.edit).toBe(false);
     });
 
-    it("should have brander with write enabled but edit disabled", () => {
-      expect(agents.brander.tools?.write).toBe(true);
-      expect(agents.brander.tools?.edit).toBe(false);
+    it("should have reskin with write enabled but edit disabled", () => {
+      expect(agents.reskin.tools?.write).toBe(true);
+      expect(agents.reskin.tools?.edit).toBe(false);
     });
   });
 
@@ -88,13 +88,13 @@ describe("Brander plugin integration", () => {
       await plugin.config(config);
 
       // Agents registered
-      expect(Object.keys(config.agent)).toContain("brander");
+      expect(Object.keys(config.agent)).toContain("reskin");
       expect(Object.keys(config.agent)).toContain("style-analyzer");
       expect(Object.keys(config.agent)).toContain("component-scanner");
 
       // Command registered
       expect(config.command.brand).toBeDefined();
-      expect(config.command.brand.agent).toBe("brander");
+      expect(config.command.brand.agent).toBe("reskin");
     });
   });
 
@@ -111,7 +111,7 @@ describe("Brander plugin integration", () => {
       };
       await plugin["chat.message"](messageInput, messageOutput);
 
-      // Simulate chat.params with brander agent prompt
+      // Simulate chat.params with reskin agent prompt
       const paramsInput = { sessionID: "test-session" };
       const paramsOutput = {
         system: "Test prompt with $BRAND_JSON placeholder",

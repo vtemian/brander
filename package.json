@@ -1,12 +1,13 @@
 {
-  "name": "brander",
+  "name": "opencode-reskin",
   "version": "0.1.0",
-  "description": "OpenCode plugin for brand transformation planning",
+  "description": "OpenCode plugin for brand transformation planning (opencode-reskin)",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "type": "module",
   "files": [
-    "dist"
+    "dist",
+    "brands"
   ],
   "exports": {
     ".": {
@@ -35,7 +36,7 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/vtemian/brander.git"
+    "url": "https://github.com/vtemian/opencode-reskin.git"
   },
   "dependencies": {
     "@opencode-ai/plugin": "^1.0.224",

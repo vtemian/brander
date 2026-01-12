@@ -1,4 +1,4 @@
-# brander
+# opencode-reskin
 
 An OpenCode plugin that generates brand transformation plans for web projects.
 
@@ -10,20 +10,20 @@ https://github.com/user-attachments/assets/1baafe10-f259-45f3-8fca-a203f41cc0ca
 
 | Before | After |
 |--------|-------|
-| [Original DataFlow](https://htmlpreview.github.io/?https://github.com/vtemian/brander/blob/main/example/before.html) | [nof1 Brand](https://htmlpreview.github.io/?https://github.com/vtemian/brander/blob/main/example/after.html) |
+| [Original DataFlow](https://htmlpreview.github.io/?https://github.com/vtemian/opencode-reskin/blob/main/example/before.html) | [nof1 Brand](https://htmlpreview.github.io/?https://github.com/vtemian/opencode-reskin/blob/main/example/after.html) |
 
 ## Available Brands
 
 | Brand | Style | Preview |
 |-------|-------|---------|
-| `nof1` | Neutral dashboard, chart-focused | [View](https://htmlpreview.github.io/?https://github.com/vtemian/brander/blob/main/brands/brand.html#b=nof1) |
+| `nof1` | Neutral dashboard, chart-focused | [View](https://htmlpreview.github.io/?https://github.com/vtemian/opencode-reskin/blob/main/brands/brand.html#b=nof1) |
 
 ## Quick Start
 
 Add to `~/.config/opencode/opencode.json`:
 
 ```json
-{ "plugin": ["brander"] }
+{ "plugin": ["opencode-reskin"] }
 ```
 
 Run the brand command:
@@ -34,7 +34,7 @@ Run the brand command:
 
 ## What It Does
 
-When you run `/brand {name}`, brander:
+When you run `/brand {name}`, opencode-reskin:
 
 - Scans your CSS, Tailwind config, and components
 - Compares against the target brand definition
@@ -57,11 +57,11 @@ The output is a markdown plan you can execute:
 
 | Agent | Job |
 |-------|-----|
-| **brander** | Orchestrates analysis, generates plan |
+| **opencode-reskin** | Orchestrates analysis, generates plan |
 | **style-analyzer** | Scans CSS, Tailwind, design tokens |
 | **component-scanner** | Finds UI components and their styling |
 
-Subagents analyze your project in parallel, then brander compares findings against the brand definition.
+Subagents analyze your project in parallel, then opencode-reskin compares findings against the brand definition.
 
 ## Adding Brands
 
@@ -83,12 +83,12 @@ Optional: `dataViz`, `states`, `voice`, `guidelines`
 
 ## Configuration
 
-Optional config at `~/.config/opencode/brander.json`:
+Optional config at `~/.config/opencode/opencode-reskin.json`:
 
 ```json
 {
   "agents": {
-    "brander": { "model": "anthropic/claude-opus-4" }
+    "opencode-reskin": { "model": "anthropic/claude-opus-4" }
   }
 }
 ```

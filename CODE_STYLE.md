@@ -1,4 +1,4 @@
-# Brander Code Style Guide
+# Reskin Code Style Guide
 
 ## Naming Conventions
 
@@ -7,7 +7,7 @@
 | Type | Convention | Examples |
 |------|------------|----------|
 | Source files | kebab-case | `brand-injector.ts`, `component-scanner.ts` |
-| Test files | `.test.ts` suffix | `parser.test.ts`, `brander.test.ts` |
+| Test files | `.test.ts` suffix | `parser.test.ts`, `reskin.test.ts` |
 | Barrel exports | `index.ts` | `src/agents/index.ts` |
 | XML data files | kebab-case | `nof1.xml` |
 
@@ -19,7 +19,7 @@
 | Interfaces/Types | PascalCase | `Brand`, `BrandColors`, `XmlElement` |
 | Variables | camelCase | `brands`, `brandXml`, `availableBrands` |
 | Constants | SCREAMING_SNAKE_CASE | `VALID_TARGETS`, `PRIMARY_AGENT_NAME` |
-| Agent configs | camelCase + `Agent` suffix | `branderAgent`, `styleAnalyzerAgent` |
+| Agent configs | camelCase + `Agent` suffix | `reskinAgent`, `styleAnalyzerAgent` |
 | Agent registry keys | kebab-case strings | `"style-analyzer"`, `"component-scanner"` |
 
 ### Function Naming Patterns
@@ -88,15 +88,15 @@ import { createBrandInjectorHook } from "./hooks/brand-injector";
 
 ```typescript
 // Barrel exports in index.ts
-export { branderAgent, styleAnalyzerAgent, componentScannerAgent };
-export const PRIMARY_AGENT_NAME = "brander";
+export { reskinAgent, styleAnalyzerAgent, componentScannerAgent };
+export const PRIMARY_AGENT_NAME = "reskin";
 export const agents: Record<string, AgentConfig> = { ... };
 
 // Type exports use 'export interface' directly
 export interface Brand { ... }
 
 // Default export for plugin entry point only
-export default BranderPlugin;
+export default ReskinPlugin;
 ```
 
 ## Code Patterns
@@ -148,7 +148,7 @@ throw new Error(
 );
 
 // Log warnings for non-fatal issues, don't throw
-console.warn(`[brander] Failed to parse ${file}: ${error.message}`);
+console.warn(`[reskin] Failed to parse ${file}: ${error.message}`);
 ```
 
 ### Type Definitions

@@ -10,9 +10,9 @@ export const AgentOverrideSchema = v.partial(
   }),
 );
 
-export const BranderConfigSchema = v.object({
+export const ReskinConfigSchema = v.object({
   agents: v.optional(v.record(v.enum(AGENTS), AgentOverrideSchema)),
 });
 
 export type AgentOverride = v.InferOutput<typeof AgentOverrideSchema>;
-export type BranderConfig = v.InferOutput<typeof BranderConfigSchema>;
+export type ReskinConfig = v.InferOutput<typeof ReskinConfigSchema>;

@@ -5,7 +5,7 @@ import { listBrands, loadBrands } from "@/brands";
 import { loadCustomConfig } from "@/config/loader";
 import { createBrandInjectorHook } from "@/hooks/brand-injector";
 
-const BranderPlugin: Plugin = async (_ctx) => {
+const ReskinPlugin: Plugin = async (_ctx) => {
   await loadBrands();
   const availableBrands = listBrands();
   const customConfig = await loadCustomConfig(agents);
@@ -58,4 +58,4 @@ If no brand is specified, ask the user to choose from the available brands.
 If a brand is specified, load its definition and proceed with analysis.`;
 }
 
-export default BranderPlugin;
+export default ReskinPlugin;
