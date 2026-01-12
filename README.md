@@ -4,6 +4,14 @@ An OpenCode plugin that generates brand transformation plans for web projects.
 
 **Hours of manual brand comparison → 2 minutes of agent analysis.**
 
+## Demo
+
+See the transformation in action:
+
+| Before | After |
+|--------|-------|
+| [Original DataFlow](https://htmlpreview.github.io/?https://github.com/vtemian/brander/blob/main/example/before.html) | [nof1 Brand](https://htmlpreview.github.io/?https://github.com/vtemian/brander/blob/main/example/after.html) |
+
 ## Quick Start
 
 Add to `~/.config/opencode/opencode.json`:
