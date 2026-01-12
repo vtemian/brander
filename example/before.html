@@ -6,30 +6,27 @@
   <title>DataFlow - Analytics Platform</title>
   <style>
     :root {
-      --primary: #111111;
-      --secondary: #2563eb;
-      --accent: #7c3aed;
-      --background: #ffffff;
-      --surface: #f9fafb;
-      --text: #111111;
-      --text-muted: #6b7280;
-      --border: #e5e7eb;
-      --success: #16a34a;
+      --primary: #6366f1;
+      --primary-dark: #4f46e5;
+      --secondary: #ec4899;
+      --accent: #14b8a6;
+      --background: #0f172a;
+      --surface: #1e293b;
+      --text: #f8fafc;
+      --text-muted: #94a3b8;
+      --border: #334155;
+      --success: #22c55e;
       --warning: #eab308;
-      --error: #dc2626;
-      --series-blue: #2563eb;
-      --series-purple: #7c3aed;
-      --series-orange: #f59e0b;
-      --series-teal: #14b8a6;
-      --series-slate: #64748b;
-      --font-sans: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Inter, Helvetica, Arial, sans-serif;
-      --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace;
-      --font-display: serif, Georgia, 'Times New Roman', serif;
-      --radius-sm: 0.25rem;
-      --radius-md: 0.5rem;
-      --radius-lg: 0.75rem;
-      --radius-xl: 1rem;
+      --error: #ef4444;
+      --font-sans: 'Poppins', system-ui, sans-serif;
+      --font-mono: 'Fira Code', monospace;
+      --radius-sm: 8px;
+      --radius-md: 12px;
+      --radius-lg: 20px;
+      --radius-xl: 28px;
     }
+
+    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Fira+Code&display=swap');
 
     * { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -46,7 +43,7 @@
       justify-content: space-between;
       align-items: center;
       padding: 1.5rem 4rem;
-      background: rgba(255, 255, 255, 0.9);
+      background: rgba(15, 23, 42, 0.8);
       backdrop-filter: blur(10px);
       position: fixed;
       top: 0;
@@ -59,7 +56,10 @@
     .logo {
       font-size: 1.5rem;
       font-weight: 700;
-      color: var(--primary);
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
     }
 
     .nav-links {
@@ -97,14 +97,14 @@
     }
 
     .btn-primary {
-      background: var(--primary);
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
       color: white;
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      box-shadow: 0 4px 15px rgba(99, 102, 241, 0.4);
     }
 
     .btn-primary:hover {
       transform: translateY(-2px);
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+      box-shadow: 0 6px 20px rgba(99, 102, 241, 0.5);
     }
 
     .btn-secondary {
@@ -126,7 +126,9 @@
       justify-content: center;
       text-align: center;
       padding: 8rem 2rem 4rem;
-      background: linear-gradient(180deg, var(--surface) 0%, var(--background) 100%);
+      background:
+        radial-gradient(ellipse at top, rgba(99, 102, 241, 0.15), transparent 50%),
+        radial-gradient(ellipse at bottom right, rgba(236, 72, 153, 0.1), transparent 50%);
     }
 
     .hero-content {
@@ -212,13 +214,13 @@
     .feature-card:hover {
       transform: translateY(-4px);
       border-color: var(--primary);
-      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+      box-shadow: 0 10px 40px rgba(99, 102, 241, 0.15);
     }
 
     .feature-icon {
       width: 48px;
       height: 48px;
-      background: var(--series-blue);
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
       border-radius: var(--radius-md);
       display: flex;
       align-items: center;
@@ -240,17 +242,7 @@
     /* Stats Section */
     .stats {
       padding: 4rem;
-      background: var(--surface);
-      border-top: 1px solid var(--border);
-      border-bottom: 1px solid var(--border);
-    }
-
-    .stats .stat-item h3 {
-      color: var(--primary);
-    }
-
-    .stats .stat-item p {
-      color: var(--text-muted);
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
     }
 
     .stats-grid {
@@ -296,7 +288,7 @@
 
     .pricing-card.featured {
       border-color: var(--primary);
-      box-shadow: 0 4px 24px rgba(0, 0, 0, 0.1);
+      box-shadow: 0 0 40px rgba(99, 102, 241, 0.2);
     }
 
     .pricing-card.featured::before {
@@ -305,7 +297,7 @@
       top: -12px;
       left: 50%;
       transform: translateX(-50%);
-      background: var(--primary);
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
       padding: 0.25rem 1rem;
       border-radius: var(--radius-xl);
       font-size: 0.75rem;
@@ -386,13 +378,13 @@
     }
 
     .alert-success {
-      background: rgba(22, 163, 74, 0.1);
+      background: rgba(34, 197, 94, 0.1);
       border: 1px solid var(--success);
       color: var(--success);
     }
 
     .alert-error {
-      background: rgba(220, 38, 38, 0.1);
+      background: rgba(239, 68, 68, 0.1);
       border: 1px solid var(--error);
       color: var(--error);
     }
