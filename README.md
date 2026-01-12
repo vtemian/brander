@@ -1,5 +1,8 @@
 # opencode-reskin
 
+[![CI](https://github.com/vtemian/opencode-reskin/actions/workflows/ci.yml/badge.svg)](https://github.com/vtemian/opencode-reskin/actions/workflows/ci.yml)
+[![npm version](https://badge.fury.io/js/opencode-reskin.svg)](https://www.npmjs.com/package/opencode-reskin)
+
 An OpenCode plugin that generates skin transformation plans for web projects.
 
 ```
