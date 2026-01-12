@@ -72,8 +72,12 @@ export function createSkinInjectorHook(): SkinInjectorHook {
 
       // Check if this is a /skin command
       const skinRequest = extractSkinFromMessage(text);
+      console.warn(
+        `[opencode-reskin] chat.message: sessionID=${input.sessionID}, text="${text.slice(0, 100)}...", extracted=${skinRequest}`,
+      );
       if (skinRequest !== undefined) {
         skinRequests.set(input.sessionID, skinRequest);
+        console.warn(`[opencode-reskin] Stored skin request: ${skinRequest} for session ${input.sessionID}`);
       }
     },
 
@@ -81,12 +85,20 @@ export function createSkinInjectorHook(): SkinInjectorHook {
       input: { sessionID: string },
       output: { options?: Record<string, unknown>; system?: string },
     ) => {
+      console.warn(
+        `[opencode-reskin] chat.params: sessionID=${input.sessionID}, hasSystem=${!!output.system}, hasPlaceholder=${output.system?.includes(SKIN_PLACEHOLDER)}`,
+      );
+
       if (!output.system || !output.system.includes(SKIN_PLACEHOLDER)) {
         return;
       }
 
       const currentSkinRequest = skinRequests.get(input.sessionID);
+      console.warn(`[opencode-reskin] Found skin request: ${currentSkinRequest} for session ${input.sessionID}`);
+
       const skinContent = generateSkinContent(currentSkinRequest);
+      console.warn(`[opencode-reskin] Generated content length: ${skinContent.length}`);
+
       output.system = output.system.replaceAll(SKIN_PLACEHOLDER, skinContent);
 
       // Clean up session state after injection to prevent memory leak
