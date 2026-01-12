@@ -59,10 +59,7 @@
     .logo {
       font-size: 1.5rem;
       font-weight: 700;
-      background: linear-gradient(135deg, var(--primary), var(--secondary));
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
+      color: var(--primary);
     }
 
     .nav-links {
@@ -100,7 +97,7 @@
     }
 
     .btn-primary {
-      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      background: var(--primary);
       color: white;
       box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
     }
@@ -221,7 +218,7 @@
     .feature-icon {
       width: 48px;
       height: 48px;
-      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      background: var(--series-blue);
       border-radius: var(--radius-md);
       display: flex;
       align-items: center;
@@ -243,7 +240,17 @@
     /* Stats Section */
     .stats {
       padding: 4rem;
-      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      background: var(--surface);
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .stats .stat-item h3 {
+      color: var(--primary);
+    }
+
+    .stats .stat-item p {
+      color: var(--text-muted);
     }
 
     .stats-grid {
@@ -298,7 +305,7 @@
       top: -12px;
       left: 50%;
       transform: translateX(-50%);
-      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      background: var(--primary);
       padding: 0.25rem 1rem;
       border-radius: var(--radius-xl);
       font-size: 0.75rem;
