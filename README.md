@@ -49,9 +49,9 @@ The output is a markdown plan you can execute:
 
 ## Available Brands
 
-| Brand | Style | Use Case |
-|-------|-------|----------|
-| `nof1` | Neutral dashboard, chart-focused | Data visualization apps |
+| Brand | Style | Preview |
+|-------|-------|---------|
+| `nof1` | Neutral dashboard, chart-focused | [View](https://htmlpreview.github.io/?https://github.com/vtemian/brander/blob/main/brands/brand.html#b=nof1) |
 
 ## Architecture: 3 Agents
 
