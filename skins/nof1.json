@@ -6,7 +6,7 @@
     "confidence": {
       "high": ["neutral UI (white bg, dark text)", "categorical chart colors (multi-series)"],
       "medium": ["serif display for wordmark/brand mark", "subtle borders and rounding"],
-      "unknown": ["dark mode support", "exact font families", "exact hex values from CSS"]
+      "unknown": ["dark mode support", "exact display/ui font families", "exact hex values from CSS"]
     }
   },
   "colors": {
@@ -78,8 +78,8 @@
       },
       {
         "role": "mono",
-        "family": "ui-monospace",
-        "fallback": "SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace",
+        "family": "'IBM Plex Mono'",
+        "fallback": "ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace",
         "usage": "Only for numbers, ticks, logs if needed"
       }
     ],

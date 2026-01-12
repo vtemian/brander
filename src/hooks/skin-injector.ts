@@ -3,32 +3,42 @@ import { getSkinJson, listSkins } from "@/skins";
 interface SkinInjectorHook {
   "chat.message": (
     input: { sessionID: string },
-    output: { parts: Array<{ type: string; text?: string }> },
+    output: {
+      parts: Array<{ type: string; text?: string }>;
+      message?: { parts?: Array<{ type: string; text?: string }> };
+    },
   ) => Promise<void>;
-  "chat.params": (
-    input: { sessionID: string },
-    output: { options?: Record<string, unknown>; system?: string },
+  "experimental.chat.messages.transform": (
+    input: Record<string, unknown>,
+    output: { messages: Array<{ info: { role: string }; parts: Array<{ type: string; text?: string }> }> },
   ) => Promise<void>;
+  getLastSkinRequest: () => string | null | undefined;
+  setLastSkinRequest: (skin: string | null | undefined) => void;
 }
 
 export function createSkinInjectorHook(): SkinInjectorHook {
+  // Track skin requests across hooks
+  // pendingSkinRequest: set by chat.message, consumed once by transform (for "no skin" errors)
+  // activeSkin: the skin to inject on EVERY transform call (persists for session)
+  let pendingSkinRequest: string | null | undefined;
+  let activeSkin: string | undefined;
+
   function extractSkinFromMessage(text: string): string | null | undefined {
     // Look for /skin command pattern at start of message
     const skinMatch = text.match(/^\/skin\s*(\S*)/);
     if (skinMatch) {
       const skinArg = skinMatch[1]?.trim();
-      return skinArg || null; // null if no argument, string if argument present
+      return skinArg || null;
     }
 
     // Also check for expanded command template with "User request:" pattern
-    // This handles the case where OpenCode expands the command template before the hook runs
     const userRequestMatch = text.match(/User request:\s*(\S+)/);
     if (userRequestMatch) {
       const skinArg = userRequestMatch[1]?.trim();
       return skinArg || null;
     }
 
-    return undefined; // Not a skin command
+    return undefined;
   }
 
   function generateSkinContent(skinName: string | null | undefined): string {
@@ -51,50 +61,74 @@ export function createSkinInjectorHook(): SkinInjectorHook {
   }
 
   return {
+    // Extract skin request from message
     "chat.message": async (
       _input: { sessionID: string },
-      output: { parts: Array<{ type: string; text?: string }> },
+      output: {
+        parts: Array<{ type: string; text?: string }>;
+        message?: { parts?: Array<{ type: string; text?: string }> };
+      },
     ) => {
-      // Extract text from message parts
-      const text = output.parts
+      const parts = output.parts || output.message?.parts || [];
+      const text = parts
         .filter((p) => p.type === "text" && "text" in p)
         .map((p) => p.text || "")
         .join(" ");
 
-      // Check if this is a /skin command
       const skinRequest = extractSkinFromMessage(text);
 
       if (skinRequest !== undefined) {
-        // Inject skin JSON directly into the message
-        const skinContent = generateSkinContent(skinRequest);
+        pendingSkinRequest = skinRequest;
+        if (skinRequest !== null) {
+          activeSkin = skinRequest;
+        }
+      }
+    },
 
-        if (skinContent && skinRequest !== null) {
-          // Append skin JSON to the message for the agent to use
-          output.parts.push({
+    // Inject skin JSON into messages before LLM call (ephemeral, not persisted)
+    "experimental.chat.messages.transform": async (
+      _input: Record<string, unknown>,
+      output: { messages: Array<{ info: { role: string }; parts: Array<{ type: string; text?: string }> }> },
+    ) => {
+      // Handle pending "no skin specified" request (one-time)
+      if (pendingSkinRequest === null) {
+        const content = generateSkinContent(null);
+        const lastUserMsg = output.messages?.findLast(
+          (m: { info: { role: string }; parts: Array<{ type: string; text?: string }> }) => m.info.role === "user",
+        );
+        if (lastUserMsg) {
+          lastUserMsg.parts.push({ type: "text", text: `\n\n${content}` });
+        }
+        pendingSkinRequest = undefined;
+        return;
+      }
+
+      // Clear pending request
+      pendingSkinRequest = undefined;
+
+      // If we have an active skin, always inject into last user message
+      if (activeSkin) {
+        const skinContent = generateSkinContent(activeSkin);
+        const lastUserMsg = output.messages?.findLast(
+          (m: { info: { role: string }; parts: Array<{ type: string; text?: string }> }) => m.info.role === "user",
+        );
+
+        if (lastUserMsg && skinContent) {
+          lastUserMsg.parts.push({
             type: "text",
-            text: `\n\n<skin-definition name="${skinRequest}">\n${skinContent}\n</skin-definition>`,
-          });
-        } else if (skinRequest === null) {
-          // No skin specified - add available skins message
-          output.parts.push({
-            type: "text",
-            text: `\n\n${skinContent}`,
-          });
-        } else {
-          // Skin not found - add error message
-          output.parts.push({
-            type: "text",
-            text: `\n\n${skinContent}`,
+            text: `\n\n<skin-definition name="${activeSkin}">\n${skinContent}\n</skin-definition>`,
           });
         }
       }
     },
 
-    "chat.params": async (
-      _input: { sessionID: string },
-      _output: { options?: Record<string, unknown>; system?: string },
-    ) => {
-      // No longer used for injection - kept for backward compatibility
+    // Test helpers
+    getLastSkinRequest: () => pendingSkinRequest ?? activeSkin ?? null,
+    setLastSkinRequest: (skin: string | null | undefined) => {
+      pendingSkinRequest = skin;
+      if (skin && skin !== null) {
+        activeSkin = skin;
+      }
     },
   };
 }

@@ -22,8 +22,8 @@ describe("Skin context injection", () => {
 
     const reskinConfig = config.agent.reskin;
 
-    // The prompt should have the $SKIN_JSON placeholder (kept for reference)
-    expect(reskinConfig.prompt).toContain("$SKIN_JSON");
+    // The prompt should reference skin-definition block
+    expect(reskinConfig.prompt).toContain("<skin-definition>");
   });
 
   it("should have nof1 skin JSON available", () => {
@@ -40,8 +40,8 @@ describe("Skin injector hook", () => {
     await loadSkins();
   });
 
-  describe("chat.message hook - skin injection", () => {
-    it("should inject skin JSON into message when /skin command is used", async () => {
+  describe("chat.message hook - skin extraction", () => {
+    it("should extract skin name from /skin command", async () => {
       const hook = createSkinInjectorHook();
 
       const input = { sessionID: "test-session" };
@@ -51,16 +51,11 @@ describe("Skin injector hook", () => {
 
       await hook["chat.message"](input, output);
 
-      // Should have added a new part with skin definition
-      expect(output.parts.length).toBe(2);
-      const injectedPart = output.parts[1];
-      expect(injectedPart.type).toBe("text");
-      expect(injectedPart.text).toContain("<skin-definition");
-      expect(injectedPart.text).toContain('"name": "nof1"');
-      expect(injectedPart.text).toContain("#111111"); // ink color
+      // Should have stored the skin request
+      expect(hook.getLastSkinRequest()).toBe("nof1");
     });
 
-    it("should inject available skins message when no skin specified", async () => {
+    it("should extract null when no skin specified", async () => {
       const hook = createSkinInjectorHook();
 
       const input = { sessionID: "test-session" };
@@ -70,59 +65,7 @@ describe("Skin injector hook", () => {
 
       await hook["chat.message"](input, output);
 
-      // Should have added a new part with available skins
-      expect(output.parts.length).toBe(2);
-      const injectedPart = output.parts[1];
-      expect(injectedPart.text).toContain("No skin specified");
-      expect(injectedPart.text).toContain("nof1");
-    });
-
-    it("should inject error message for unknown skin", async () => {
-      const hook = createSkinInjectorHook();
-
-      const input = { sessionID: "test-session" };
-      const output = {
-        parts: [{ type: "text", text: "/skin unknown-skin" }],
-      };
-
-      await hook["chat.message"](input, output);
-
-      // Should have added a new part with error message
-      expect(output.parts.length).toBe(2);
-      const injectedPart = output.parts[1];
-      expect(injectedPart.text).toContain("not found");
-      expect(injectedPart.text).toContain("nof1"); // suggests available skins
-    });
-
-    it("should not inject anything for non-skin messages", async () => {
-      const hook = createSkinInjectorHook();
-
-      const input = { sessionID: "test-session" };
-      const output = {
-        parts: [{ type: "text", text: "Just a regular message" }],
-      };
-
-      await hook["chat.message"](input, output);
-
-      // Should not add any new parts
-      expect(output.parts.length).toBe(1);
-    });
-  });
-
-  describe("chat.message hook - skin extraction", () => {
-    it("should extract skin name from /skin command arguments", async () => {
-      const hook = createSkinInjectorHook();
-
-      const input = { sessionID: "test-session" };
-      const output = {
-        parts: [{ type: "text", text: "/skin nof1" }],
-      };
-
-      await hook["chat.message"](input, output);
-
-      // Verify skin was injected (extraction happened)
-      expect(output.parts.length).toBe(2);
-      expect(output.parts[1].text).toContain("nof1");
+      expect(hook.getLastSkinRequest()).toBeNull();
     });
 
     it("should extract skin name from expanded command template", async () => {
@@ -140,78 +83,170 @@ Available skins:
 
 User request: nof1
 
-The skin JSON is already injected into your system prompt.`,
+The skin JSON will be provided in this message.`,
           },
         ],
       };
 
       await hook["chat.message"](input, output);
 
-      // Should have injected the skin JSON
-      expect(output.parts.length).toBe(2);
-      expect(output.parts[1].text).toContain("<skin-definition");
-      expect(output.parts[1].text).toContain('"name": "nof1"');
+      expect(hook.getLastSkinRequest()).toBe("nof1");
     });
 
-    it("should only match /skin at start of message", async () => {
+    it("should not extract from non-skin messages", async () => {
       const hook = createSkinInjectorHook();
 
       const input = { sessionID: "test-session" };
       const output = {
-        parts: [{ type: "text", text: "Please use /skin nof1 for styling" }],
+        parts: [{ type: "text", text: "Just a regular message" }],
       };
 
       await hook["chat.message"](input, output);
 
-      // Should NOT inject - /skin is in the middle
-      expect(output.parts.length).toBe(1);
+      // Should remain null (no active skin, no pending request)
+      expect(hook.getLastSkinRequest()).toBeNull();
     });
   });
 
-  describe("end-to-end flow", () => {
-    it("should inject skin JSON in message when /skin command is used", async () => {
+  describe("experimental.chat.messages.transform hook - injection", () => {
+    it("should inject skin JSON into last user message", async () => {
       const hook = createSkinInjectorHook();
-      const sessionID = "e2e-test-session";
 
-      // User sends /skin nof1 message
-      const output = { parts: [{ type: "text", text: "/skin nof1" }] };
-      await hook["chat.message"]({ sessionID }, output);
+      // Set up the skin request (normally done by chat.message)
+      hook.setLastSkinRequest("nof1");
 
-      // Verify skin JSON is injected into the message
-      expect(output.parts.length).toBe(2);
-      const skinPart = output.parts[1];
-      expect(skinPart.text).toContain("<skin-definition");
-      expect(skinPart.text).toContain('"name": "nof1"');
-      expect(skinPart.text).toContain("#111111"); // nof1 ink color
-    });
-
-    it("should work with expanded command template", async () => {
-      const hook = createSkinInjectorHook();
-      const sessionID = "e2e-test-session-2";
-
-      // Simulating what OpenCode sends after expanding the /skin command template
       const output = {
-        parts: [
+        messages: [
           {
-            type: "text",
-            text: `Analyze this project and generate a skin transformation plan.
-
-Available skins:
-- nof1
-
-User request: nof1
-
-The skin JSON is already injected into your system prompt.`,
+            info: { role: "user" },
+            parts: [{ type: "text", text: "Analyze this project" }],
           },
         ],
       };
 
-      await hook["chat.message"]({ sessionID }, output);
+      await hook["experimental.chat.messages.transform"]({}, output);
 
-      // Verify skin JSON is injected
-      expect(output.parts.length).toBe(2);
-      expect(output.parts[1].text).toContain("<skin-definition");
-      expect(output.parts[1].text).toContain('"name": "nof1"');
+      // Should have injected skin definition
+      expect(output.messages[0].parts.length).toBe(2);
+      expect(output.messages[0].parts[1].text).toContain("<skin-definition");
+      expect(output.messages[0].parts[1].text).toContain('"name": "nof1"');
+      expect(output.messages[0].parts[1].text).toContain("#111111");
+
+      // activeSkin persists for the session (for subsequent LLM calls)
+      expect(hook.getLastSkinRequest()).toBe("nof1");
+    });
+
+    it("should inject available skins message when no skin specified", async () => {
+      const hook = createSkinInjectorHook();
+
+      // Set up null skin request
+      hook.setLastSkinRequest(null);
+
+      const output = {
+        messages: [
+          {
+            info: { role: "user" },
+            parts: [{ type: "text", text: "/skin" }],
+          },
+        ],
+      };
+
+      await hook["experimental.chat.messages.transform"]({}, output);
+
+      expect(output.messages[0].parts.length).toBe(2);
+      expect(output.messages[0].parts[1].text).toContain("No skin specified");
+      expect(output.messages[0].parts[1].text).toContain("nof1");
+    });
+
+    it("should inject error for unknown skin", async () => {
+      const hook = createSkinInjectorHook();
+
+      hook.setLastSkinRequest("unknown-skin");
+
+      const output = {
+        messages: [
+          {
+            info: { role: "user" },
+            parts: [{ type: "text", text: "/skin unknown-skin" }],
+          },
+        ],
+      };
+
+      await hook["experimental.chat.messages.transform"]({}, output);
+
+      expect(output.messages[0].parts.length).toBe(2);
+      expect(output.messages[0].parts[1].text).toContain("not found");
+      expect(output.messages[0].parts[1].text).toContain("nof1"); // suggests available
+    });
+
+    it("should find the last user message in conversation", async () => {
+      const hook = createSkinInjectorHook();
+
+      hook.setLastSkinRequest("nof1");
+
+      const output = {
+        messages: [
+          {
+            info: { role: "user" },
+            parts: [{ type: "text", text: "First message" }],
+          },
+          {
+            info: { role: "assistant" },
+            parts: [{ type: "text", text: "Response" }],
+          },
+          {
+            info: { role: "user" },
+            parts: [{ type: "text", text: "Second message with /skin" }],
+          },
+        ],
+      };
+
+      await hook["experimental.chat.messages.transform"]({}, output);
+
+      // Should inject into the LAST user message only
+      expect(output.messages[0].parts.length).toBe(1); // first user msg unchanged
+      expect(output.messages[1].parts.length).toBe(1); // assistant unchanged
+      expect(output.messages[2].parts.length).toBe(2); // last user msg has injection
+      expect(output.messages[2].parts[1].text).toContain("<skin-definition");
+    });
+  });
+
+  describe("end-to-end flow", () => {
+    it("should extract then inject skin JSON", async () => {
+      const hook = createSkinInjectorHook();
+
+      // Step 1: chat.message extracts the skin name
+      await hook["chat.message"](
+        { sessionID: "test" },
+        {
+          parts: [
+            {
+              type: "text",
+              text: `Analyze this project.
+
+User request: nof1`,
+            },
+          ],
+        },
+      );
+
+      expect(hook.getLastSkinRequest()).toBe("nof1");
+
+      // Step 2: experimental.chat.messages.transform injects the skin JSON
+      const output = {
+        messages: [
+          {
+            info: { role: "user" },
+            parts: [{ type: "text", text: "User request: nof1" }],
+          },
+        ],
+      };
+
+      await hook["experimental.chat.messages.transform"]({}, output);
+
+      expect(output.messages[0].parts.length).toBe(2);
+      expect(output.messages[0].parts[1].text).toContain("<skin-definition");
+      expect(output.messages[0].parts[1].text).toContain('"name": "nof1"');
     });
   });
 });

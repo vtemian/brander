@@ -18,9 +18,9 @@ BE THOROUGH. The plan should be detailed enough that a developer unfamiliar with
 </purpose>
 
 <skin-context>
-The target skin JSON is provided below. DO NOT try to read skin files from disk - use this data directly.
-
-$SKIN_JSON
+The target skin JSON is provided in a <skin-definition> block in the user's message.
+DO NOT try to read skin files from disk - use the <skin-definition> data directly.
+If no <skin-definition> block is present, ask the user to run /skin [skin-name] to specify a skin.
 </skin-context>
 
 <workflow>

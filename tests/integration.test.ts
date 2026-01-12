@@ -41,7 +41,7 @@ describe("Reskin plugin integration", () => {
       const skin = getSkin("nof1");
       const monoFont = skin!.typography.fonts.find((f) => f.role === "mono");
 
-      expect(monoFont?.family).toBe("ui-monospace");
+      expect(monoFont?.family).toBe("'IBM Plex Mono'");
     });
   });
 
@@ -99,23 +99,34 @@ describe("Reskin plugin integration", () => {
   });
 
   describe("Skin JSON injection end-to-end", () => {
-    it("should inject skin JSON into message when /skin command is used", async () => {
+    it("should inject skin JSON via two-phase hook flow", async () => {
       const pluginModule = await import("../src/index");
       const mockCtx = { cwd: () => "/test/project" };
       const plugin = await pluginModule.default(mockCtx);
 
-      // Simulate /skin nof1 command message
+      // Phase 1: chat.message extracts skin name
       const messageInput = { sessionID: "test-session" };
       const messageOutput = {
         parts: [{ type: "text", text: "/skin nof1" }],
       };
       await plugin["chat.message"](messageInput, messageOutput);
 
-      // Skin JSON should be injected into the message
-      expect(messageOutput.parts.length).toBe(2);
-      expect(messageOutput.parts[1].text).toContain("<skin-definition");
-      expect(messageOutput.parts[1].text).toContain('"name": "nof1"');
-      expect(messageOutput.parts[1].text).toContain("#111111");
+      // Phase 2: experimental.chat.messages.transform injects skin JSON
+      const transformOutput = {
+        messages: [
+          {
+            info: { role: "user" },
+            parts: [{ type: "text", text: "/skin nof1" }],
+          },
+        ],
+      };
+      await plugin["experimental.chat.messages.transform"]({}, transformOutput);
+
+      // Skin JSON should be injected into the last user message
+      expect(transformOutput.messages[0].parts.length).toBe(2);
+      expect(transformOutput.messages[0].parts[1].text).toContain("<skin-definition");
+      expect(transformOutput.messages[0].parts[1].text).toContain('"name": "nof1"');
+      expect(transformOutput.messages[0].parts[1].text).toContain("#111111");
     });
 
     it("should show available skins when /skin command has no argument", async () => {
@@ -123,17 +134,28 @@ describe("Reskin plugin integration", () => {
       const mockCtx = { cwd: () => "/test/project" };
       const plugin = await pluginModule.default(mockCtx);
 
-      // Simulate /skin command without argument
+      // Phase 1: chat.message extracts null skin
       const messageInput = { sessionID: "test-session-2" };
       const messageOutput = {
         parts: [{ type: "text", text: "/skin" }],
       };
       await plugin["chat.message"](messageInput, messageOutput);
 
-      // Should show available skins message in the message
-      expect(messageOutput.parts.length).toBe(2);
-      expect(messageOutput.parts[1].text).toContain("No skin specified");
-      expect(messageOutput.parts[1].text).toContain("nof1");
+      // Phase 2: experimental.chat.messages.transform injects available skins message
+      const transformOutput = {
+        messages: [
+          {
+            info: { role: "user" },
+            parts: [{ type: "text", text: "/skin" }],
+          },
+        ],
+      };
+      await plugin["experimental.chat.messages.transform"]({}, transformOutput);
+
+      // Should show available skins message
+      expect(transformOutput.messages[0].parts.length).toBe(2);
+      expect(transformOutput.messages[0].parts[1].text).toContain("No skin specified");
+      expect(transformOutput.messages[0].parts[1].text).toContain("nof1");
     });
   });
 });

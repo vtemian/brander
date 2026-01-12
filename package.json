@@ -1,6 +1,6 @@
 {
   "name": "opencode-reskin",
-  "version": "0.2.6",
+  "version": "0.3.0",
   "description": "OpenCode plugin for skin transformation planning (opencode-reskin)",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",

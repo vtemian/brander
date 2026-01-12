@@ -25,7 +25,7 @@ describe("reskin agent", () => {
     expect(reskinAgent.prompt).toContain("Transformation Plan");
   });
 
-  it("should have skin context placeholder", () => {
-    expect(reskinAgent.prompt).toContain("$SKIN_JSON");
+  it("should reference skin-definition block in prompt", () => {
+    expect(reskinAgent.prompt).toContain("<skin-definition>");
   });
 });

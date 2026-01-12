@@ -32,14 +32,14 @@ const ReskinPlugin: Plugin = async (_ctx) => {
       };
     },
 
-    // Intercept messages to extract skin name from /skin command
+    // Intercept messages to extract skin name
     "chat.message": async (input, output) => {
-      await skinInjectorHook["chat.message"](input, output);
+      await skinInjectorHook["chat.message"](input as any, output as any);
     },
 
-    // Inject skin XML into agent system prompt
-    "chat.params": async (input, output) => {
-      await skinInjectorHook["chat.params"](input, output);
+    // Inject skin JSON into messages before LLM call (this is the key hook!)
+    "experimental.chat.messages.transform": async (input, output) => {
+      await skinInjectorHook["experimental.chat.messages.transform"](input as any, output as any);
     },
   };
 };
@@ -54,7 +54,7 @@ ${skinList}
 
 User request: $ARGUMENTS
 
-The skin JSON is already injected into your system prompt - do not try to read skin files from disk.`;
+The skin JSON will be provided in this message. Use the <skin-definition> data below - do not try to read skin files from disk.`;
 }
 
 export default ReskinPlugin;
