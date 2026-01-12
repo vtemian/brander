@@ -318,8 +318,11 @@
     };
 
     function loadBrand() {
-      const params = new URLSearchParams(window.location.search);
-      const brandName = params.get('b');
+      // Support both ?b=name and #b=name (hash survives htmlpreview.github.io)
+      let brandName = new URLSearchParams(window.location.search).get('b');
+      if (!brandName && window.location.hash) {
+        brandName = new URLSearchParams(window.location.hash.slice(1)).get('b');
+      }
       const availableBrands = Object.keys(BRANDS).join(', ');
 
       if (!brandName) {
