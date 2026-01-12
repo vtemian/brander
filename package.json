@@ -1,6 +1,6 @@
 {
   "name": "opencode-reskin",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "description": "OpenCode plugin for skin transformation planning (opencode-reskin)",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -16,7 +16,8 @@
     }
   },
   "scripts": {
-    "build": "bun build src/index.ts --outdir dist --target bun --format esm && tsc --emitDeclarationOnly && cp -r skins dist/",
+    "generate-skins": "bun scripts/generate-skins.ts",
+    "build": "bun run generate-skins && bun build src/index.ts --outdir dist --target bun --format esm && tsc --emitDeclarationOnly && cp -r skins dist/",
     "clean": "rm -rf dist",
     "typecheck": "tsc --noEmit",
     "prepublishOnly": "bun run clean && bun run build",
