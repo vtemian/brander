@@ -1,4 +1,5 @@
-import { describe, it, expect } from "bun:test";
+import { describe, expect, it } from "bun:test";
+
 import { styleAnalyzerAgent } from "../../src/agents/style-analyzer";
 
 describe("style-analyzer agent", () => {

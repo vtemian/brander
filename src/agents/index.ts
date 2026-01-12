@@ -1,7 +1,8 @@
 import type { AgentConfig } from "@opencode-ai/sdk";
+
 import { branderAgent } from "./brander";
-import { styleAnalyzerAgent } from "./style-analyzer";
 import { componentScannerAgent } from "./component-scanner";
+import { styleAnalyzerAgent } from "./style-analyzer";
 
 export enum AGENTS {
   brander = "brander",

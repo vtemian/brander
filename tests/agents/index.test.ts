@@ -1,4 +1,5 @@
-import { describe, it, expect } from "bun:test";
+import { describe, expect, it } from "bun:test";
+
 import { agents, PRIMARY_AGENT_NAME } from "../../src/agents";
 
 describe("agents registry", () => {
