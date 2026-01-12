@@ -2,7 +2,7 @@
 
 ## Overview
 
-Reskin is an OpenCode plugin that analyzes web projects and generates brand transformation plans. It reads brand definitions from XML files and uses AI agents to analyze a project's current styling (CSS, Tailwind, components), then outputs an actionable checklist to match the target brand.
+Reskin is an OpenCode plugin that analyzes web projects and generates skin transformation plans. It reads skin definitions from XML files and uses AI agents to analyze a project's current styling (CSS, Tailwind, components), then outputs an actionable checklist to match the target skin.
 
 ## Tech Stack
 
@@ -29,19 +29,19 @@ reskin/
 │   │   ├── reskin.ts        # Primary orchestrator agent
 │   │   ├── style-analyzer.ts # CSS/Tailwind analysis subagent
 │   │   └── component-scanner.ts # UI component analysis subagent
-│   ├── brands/               # Brand definition system
-│   │   ├── index.ts          # Brand loader (loadBrands, getBrand, listBrands)
+│   ├── skins/               # Skin definition system
+│   │   ├── index.ts          # Skin loader (loadSkins, getSkin, listSkins)
 │   │   ├── schema.ts         # TypeScript type definitions
 │   │   ├── parser.ts         # Custom XML parser (regex-based, no deps)
-│   │   └── nof1.xml          # Bundled brand definition
+│   │   └── nof1.xml          # Bundled skin definition
 │   └── hooks/
-│       └── brand-injector.ts # Injects brand XML into agent prompts
+│       └── skin-injector.ts # Injects skin XML into agent prompts
 ├── tests/                    # Test files (mirrors src/ structure)
 │   ├── agents/
-│   ├── brands/
+│   ├── skins/
 │   ├── index.test.ts
 │   ├── integration.test.ts
-│   └── brand-injection.test.ts
+│   └── skin-injection.test.ts
 ├── dist/                     # Build output (ESM + .d.ts)
 ├── thoughts/shared/          # Design documents and plans
 ├── package.json
@@ -56,31 +56,31 @@ reskin/
 **Responsibility:** Initialize plugin, register agents, commands, and hooks.
 
 **Lifecycle:**
-1. Load all brand XML files at startup via `loadBrands()`
-2. Create brand injector hook
+1. Load all skin XML files at startup via `loadSkins()`
+2. Create skin injector hook
 3. Return config callback that registers:
    - All agents from `src/agents/`
-   - `/brand` command with template
+   - `/skin` command with template
    - `chat.message` and `chat.params` hooks
 
-### 2. Brands Module (`src/brands/`)
+### 2. Skins Module (`src/skins/`)
 
-**Responsibility:** Load, parse, and store brand definitions.
+**Responsibility:** Load, parse, and store skin definitions.
 
 | File | Purpose |
 |------|---------|
-| `index.ts` | Brand storage (two Maps) and public API |
-| `schema.ts` | TypeScript interfaces for brand structure |
+| `index.ts` | Skin storage (two Maps) and public API |
+| `schema.ts` | TypeScript interfaces for skin structure |
 | `parser.ts` | Custom XML parser using regex |
-| `*.xml` | Brand definition files |
+| `*.xml` | Skin definition files |
 
 **Key Functions:**
-- `loadBrands()` - Reads all `.xml` files from brands directory
-- `getBrand(name)` - Returns parsed `Brand` object
-- `getBrandXml(name)` - Returns raw XML string
-- `listBrands()` - Returns array of loaded brand names
+- `loadSkins()` - Reads all `.xml` files from skins directory
+- `getSkin(name)` - Returns parsed `Skin` object
+- `getSkinXml(name)` - Returns raw XML string
+- `listSkins()` - Returns array of loaded skin names
 
-**Brand Schema (required sections):**
+**Skin Schema (required sections):**
 - `meta` - description, target (web/mobile/all)
 - `colors` - palette and semantic colors
 - `typography` - fonts and scale
@@ -91,7 +91,7 @@ reskin/
 
 ### 3. Agents Module (`src/agents/`)
 
-**Responsibility:** Define AI agent configurations for brand analysis.
+**Responsibility:** Define AI agent configurations for skin analysis.
 
 | Agent | Mode | Purpose |
 |-------|------|---------|
@@ -100,48 +100,48 @@ reskin/
 | `component-scanner` | subagent | Scans UI components, identifies patterns |
 
 **Agent Workflow:**
-1. User invokes `/brand [name]`
+1. User invokes `/skin [name]`
 2. `reskin` agent spawns `style-analyzer` and `component-scanner` in parallel
 3. Subagents return findings
-4. `reskin` compares findings against brand definition
+4. `reskin` compares findings against skin definition
 5. Outputs transformation checklist
 
 ### 4. Hooks Module (`src/hooks/`)
 
-**Responsibility:** Intercept chat messages and inject brand context.
+**Responsibility:** Intercept chat messages and inject skin context.
 
-**Brand Injector Hook:**
-- `chat.message` - Extracts brand name from `/brand [name]` command
-- `chat.params` - Replaces `$BRAND_XML` placeholder in agent prompts with actual XML
+**Skin Injector Hook:**
+- `chat.message` - Extracts skin name from `/skin [name]` command
+- `chat.params` - Replaces `$SKIN_XML` placeholder in agent prompts with actual XML
 
-**State:** Uses a Map to track brand requests per session (cleaned up after injection).
+**State:** Uses a Map to track skin requests per session (cleaned up after injection).
 
 ## Data Flow
 
 ```
 ┌─────────────────────────────────────────────────────────────────────────┐
-│                           User: /brand nof1                             │
+│                           User: /skin nof1                             │
 └─────────────────────────────────────────────────────────────────────────┘
                                     │
                                     ▼
 ┌─────────────────────────────────────────────────────────────────────────┐
 │  chat.message hook                                                      │
 │  - Extracts "nof1" from command                                         │
-│  - Stores in brandRequests Map                                          │
+│  - Stores in skinRequests Map                                          │
 └─────────────────────────────────────────────────────────────────────────┘
                                     │
                                     ▼
 ┌─────────────────────────────────────────────────────────────────────────┐
 │  chat.params hook                                                       │
-│  - Retrieves brand XML via getBrandXml("nof1")                          │
-│  - Replaces $BRAND_XML in reskin agent prompt                          │
+│  - Retrieves skin XML via getSkinXml("nof1")                          │
+│  - Replaces $SKIN_XML in reskin agent prompt                          │
 │  - Clears session state                                                 │
 └─────────────────────────────────────────────────────────────────────────┘
                                     │
                                     ▼
 ┌─────────────────────────────────────────────────────────────────────────┐
 │  reskin agent (primary)                                                │
-│  - Has brand XML in system prompt                                       │
+│  - Has skin XML in system prompt                                       │
 │  - Spawns subagents in parallel                                         │
 └─────────────────────────────────────────────────────────────────────────┘
                     │                               │
@@ -157,7 +157,7 @@ reskin/
                                     ▼
 ┌─────────────────────────────────────────────────────────────────────────┐
 │  reskin agent                                                          │
-│  - Compares findings vs brand definition                                │
+│  - Compares findings vs skin definition                                │
 │  - Generates transformation plan                                        │
 │  - Outputs actionable checklist                                         │
 └─────────────────────────────────────────────────────────────────────────┘
@@ -168,7 +168,7 @@ reskin/
 | Integration | Purpose |
 |-------------|---------|
 | OpenCode Plugin SDK | Plugin lifecycle, agent registration, hooks |
-| File System | Read brand XML files from `src/brands/` |
+| File System | Read skin XML files from `src/skins/` |
 
 ## Configuration
 
@@ -179,7 +179,7 @@ reskin/
 
 ### Environment
 
-No environment variables required. Brand definitions are bundled in `src/brands/`.
+No environment variables required. Skin definitions are bundled in `src/skins/`.
 
 ## Build & Deploy
 
@@ -204,10 +204,10 @@ bun run format
 **Build Output:**
 - `dist/index.js` - ESM bundle
 - `dist/index.d.ts` - TypeScript declarations
-- `dist/brands/*.xml` - Bundled brand files
+- `dist/skins/*.xml` - Bundled skin files
 
-## Adding New Brands
+## Adding New Skins
 
-1. Create `src/brands/[name].xml` following the schema
+1. Create `src/skins/[name].xml` following the schema
 2. Required sections: `meta`, `colors`, `typography`, `spacing`, `radius`
-3. Brand is auto-loaded at plugin startup
+3. Skin is auto-loaded at plugin startup

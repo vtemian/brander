@@ -31,7 +31,7 @@ export const ColorModesSchema = v.object({
   supportsDarkMode: v.optional(v.string()),
 });
 
-export const BrandColorsSchema = v.object({
+export const SkinColorsSchema = v.object({
   palette: v.array(PaletteColorSchema),
   semantic: v.array(SemanticColorSchema),
   dataViz: v.optional(DataVizSchema),
@@ -53,13 +53,13 @@ export const TypeScaleSchema = v.object({
   lineHeight: v.string(),
 });
 
-export const BrandTypographySchema = v.object({
+export const SkinTypographySchema = v.object({
   fonts: v.array(FontDefinitionSchema),
   scale: v.array(TypeScaleSchema),
 });
 
 // Spacing
-export const BrandSpacingSchema = v.object({
+export const SkinSpacingSchema = v.object({
   unit: v.string(),
 });
 
@@ -69,7 +69,7 @@ export const RadiusSizeSchema = v.object({
   value: v.string(),
 });
 
-export const BrandRadiusSchema = v.object({
+export const SkinRadiusSchema = v.object({
   sizes: v.array(RadiusSizeSchema),
   notes: v.optional(v.string()),
 });
@@ -90,19 +90,19 @@ export const CardComponentSchema = v.object({
   padding: v.string(),
 });
 
-export const BrandComponentsSchema = v.object({
+export const SkinComponentsSchema = v.object({
   buttons: v.array(ButtonComponentSchema),
   cards: v.array(CardComponentSchema),
 });
 
 // Optional: Voice
-export const BrandVoiceSchema = v.object({
+export const SkinVoiceSchema = v.object({
   tone: v.string(),
   principles: v.array(v.string()),
 });
 
 // Optional: Guidelines
-export const BrandGuidelinesSchema = v.object({
+export const SkinGuidelinesSchema = v.object({
   dos: v.array(v.string()),
   donts: v.array(v.string()),
 });
@@ -115,24 +115,24 @@ export const ConfidenceSchema = v.object({
 });
 
 // Meta
-export const BrandMetaSchema = v.object({
+export const SkinMetaSchema = v.object({
   description: v.optional(v.string()),
   target: v.picklist(["web", "mobile", "all"]),
   confidence: v.optional(ConfidenceSchema),
 });
 
-// Main Brand schema
-export const BrandSchema = v.object({
+// Main Skin schema
+export const SkinSchema = v.object({
   name: v.string(),
   version: v.string(),
-  meta: BrandMetaSchema,
-  colors: BrandColorsSchema,
-  typography: BrandTypographySchema,
-  spacing: BrandSpacingSchema,
-  radius: BrandRadiusSchema,
-  components: v.optional(BrandComponentsSchema),
-  voice: v.optional(BrandVoiceSchema),
-  guidelines: v.optional(BrandGuidelinesSchema),
+  meta: SkinMetaSchema,
+  colors: SkinColorsSchema,
+  typography: SkinTypographySchema,
+  spacing: SkinSpacingSchema,
+  radius: SkinRadiusSchema,
+  components: v.optional(SkinComponentsSchema),
+  voice: v.optional(SkinVoiceSchema),
+  guidelines: v.optional(SkinGuidelinesSchema),
 });
 
 // Infer TypeScript types from schemas
@@ -142,18 +142,18 @@ export type StateColor = v.InferOutput<typeof StateColorSchema>;
 export type DataVizColor = v.InferOutput<typeof DataVizColorSchema>;
 export type DataViz = v.InferOutput<typeof DataVizSchema>;
 export type ColorModes = v.InferOutput<typeof ColorModesSchema>;
-export type BrandColors = v.InferOutput<typeof BrandColorsSchema>;
+export type SkinColors = v.InferOutput<typeof SkinColorsSchema>;
 export type FontDefinition = v.InferOutput<typeof FontDefinitionSchema>;
 export type TypeScale = v.InferOutput<typeof TypeScaleSchema>;
-export type BrandTypography = v.InferOutput<typeof BrandTypographySchema>;
-export type BrandSpacing = v.InferOutput<typeof BrandSpacingSchema>;
+export type SkinTypography = v.InferOutput<typeof SkinTypographySchema>;
+export type SkinSpacing = v.InferOutput<typeof SkinSpacingSchema>;
 export type RadiusSize = v.InferOutput<typeof RadiusSizeSchema>;
-export type BrandRadius = v.InferOutput<typeof BrandRadiusSchema>;
+export type SkinRadius = v.InferOutput<typeof SkinRadiusSchema>;
 export type ButtonComponent = v.InferOutput<typeof ButtonComponentSchema>;
 export type CardComponent = v.InferOutput<typeof CardComponentSchema>;
-export type BrandComponents = v.InferOutput<typeof BrandComponentsSchema>;
-export type BrandVoice = v.InferOutput<typeof BrandVoiceSchema>;
-export type BrandGuidelines = v.InferOutput<typeof BrandGuidelinesSchema>;
+export type SkinComponents = v.InferOutput<typeof SkinComponentsSchema>;
+export type SkinVoice = v.InferOutput<typeof SkinVoiceSchema>;
+export type SkinGuidelines = v.InferOutput<typeof SkinGuidelinesSchema>;
 export type Confidence = v.InferOutput<typeof ConfidenceSchema>;
-export type BrandMeta = v.InferOutput<typeof BrandMetaSchema>;
-export type Brand = v.InferOutput<typeof BrandSchema>;
+export type SkinMeta = v.InferOutput<typeof SkinMetaSchema>;
+export type Skin = v.InferOutput<typeof SkinSchema>;

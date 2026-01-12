@@ -6,7 +6,7 @@
 
 | Type | Convention | Examples |
 |------|------------|----------|
-| Source files | kebab-case | `brand-injector.ts`, `component-scanner.ts` |
+| Source files | kebab-case | `skin-injector.ts`, `component-scanner.ts` |
 | Test files | `.test.ts` suffix | `parser.test.ts`, `reskin.test.ts` |
 | Barrel exports | `index.ts` | `src/agents/index.ts` |
 | XML data files | kebab-case | `nof1.xml` |
@@ -15,9 +15,9 @@
 
 | Type | Convention | Examples |
 |------|------------|----------|
-| Functions | camelCase, verb-first | `getBrand()`, `parseColors()`, `loadBrands()` |
-| Interfaces/Types | PascalCase | `Brand`, `BrandColors`, `XmlElement` |
-| Variables | camelCase | `brands`, `brandXml`, `availableBrands` |
+| Functions | camelCase, verb-first | `getSkin()`, `parseColors()`, `loadSkins()` |
+| Interfaces/Types | PascalCase | `Skin`, `SkinColors`, `XmlElement` |
+| Variables | camelCase | `skins`, `skinXml`, `availableSkins` |
 | Constants | SCREAMING_SNAKE_CASE | `VALID_TARGETS`, `PRIMARY_AGENT_NAME` |
 | Agent configs | camelCase + `Agent` suffix | `reskinAgent`, `styleAnalyzerAgent` |
 | Agent registry keys | kebab-case strings | `"style-analyzer"`, `"component-scanner"` |
@@ -26,17 +26,17 @@
 
 ```typescript
 // Getters - retrieve existing data
-getBrand(name)
-getBrandXml(name)
+getSkin(name)
+getSkinXml(name)
 
 // Loaders - read from external source
-loadBrands()
+loadSkins()
 
 // Listers - return collections
-listBrands()
+listSkins()
 
 // Parsers - transform data
-parseBrandXml(xml)
+parseSkinXml(xml)
 parseColors(element)
 
 // Finders - search within data
@@ -47,14 +47,14 @@ findChildren(element, tag)
 requireChild(element, tag)
 
 // Creators/Factories - construct new objects
-createBrandInjectorHook()
-createBrandTemplate(brands)
+createSkinInjectorHook()
+createSkinTemplate(skins)
 
 // Extractors - pull specific data
-extractBrandFromMessage(text)
+extractSkinFromMessage(text)
 
 // Generators - produce output
-generateBrandContent(brandName)
+generateSkinContent(skinName)
 ```
 
 ## File Organization
@@ -78,10 +78,10 @@ import type { Plugin } from "@opencode-ai/plugin";
 
 // 2. Internal modules (absolute paths from src/)
 import { agents, PRIMARY_AGENT_NAME } from "./agents";
-import { loadBrands, listBrands } from "./brands";
+import { loadSkins, listSkins } from "./skins";
 
 // 3. Local files
-import { createBrandInjectorHook } from "./hooks/brand-injector";
+import { createSkinInjectorHook } from "./hooks/skin-injector";
 ```
 
 ### Export Patterns
@@ -93,7 +93,7 @@ export const PRIMARY_AGENT_NAME = "reskin";
 export const agents: Record<string, AgentConfig> = { ... };
 
 // Type exports use 'export interface' directly
-export interface Brand { ... }
+export interface Skin { ... }
 
 // Default export for plugin entry point only
 export default ReskinPlugin;
@@ -104,12 +104,12 @@ export default ReskinPlugin;
 ### Factory Functions
 
 ```typescript
-export function createBrandInjectorHook(): BrandInjectorHook {
+export function createSkinInjectorHook(): SkinInjectorHook {
   // Private state
-  const brandRequests = new Map<string, string | null>();
+  const skinRequests = new Map<string, string | null>();
 
   // Private helpers
-  function extractBrandFromMessage(text: string): string | null | undefined {
+  function extractSkinFromMessage(text: string): string | null | undefined {
     // ...
   }
 
@@ -125,12 +125,12 @@ export function createBrandInjectorHook(): BrandInjectorHook {
 
 ```typescript
 // Private Maps for storage
-const brands = new Map<string, Brand>();
-const brandXml = new Map<string, string>();
+const skins = new Map<string, Skin>();
+const skinXml = new Map<string, string>();
 
 // Public functions to access
-export function getBrand(name: string): Brand | undefined {
-  return brands.get(name);
+export function getSkin(name: string): Skin | undefined {
+  return skins.get(name);
 }
 ```
 
@@ -155,7 +155,7 @@ console.warn(`[reskin] Failed to parse ${file}: ${error.message}`);
 
 ```typescript
 // Domain-prefixed interfaces
-export interface BrandColors {
+export interface SkinColors {
   palette: PaletteColor[];
   semantic: SemanticColor[];
 }
@@ -170,7 +170,7 @@ target: "web" | "mobile" | "all";
 
 // Optional properties with ?
 description?: string;
-components?: BrandComponents;
+components?: SkinComponents;
 ```
 
 ## Testing Patterns
@@ -179,19 +179,19 @@ components?: BrandComponents;
 
 ```typescript
 import { describe, it, expect } from "bun:test";
-import { parseBrandXml } from "../../src/brands/parser";
+import { parseSkinXml } from "../../src/skins/parser";
 
 // Test fixtures as constants
-const MINIMAL_BRAND_XML = `...`;
+const MINIMAL_SKIN_XML = `...`;
 
-describe("parseBrandXml", () => {
-  it("should parse minimal brand XML", () => {
-    const brand = parseBrandXml(MINIMAL_BRAND_XML);
-    expect(brand.name).toBe("test");
+describe("parseSkinXml", () => {
+  it("should parse minimal skin XML", () => {
+    const skin = parseSkinXml(MINIMAL_SKIN_XML);
+    expect(skin.name).toBe("test");
   });
 
   it("should throw on invalid XML with helpful error message", () => {
-    expect(() => parseBrandXml("not xml")).toThrow(/not xml/);
+    expect(() => parseSkinXml("not xml")).toThrow(/not xml/);
   });
 });
 ```
@@ -202,11 +202,11 @@ describe("parseBrandXml", () => {
 - `it()` - "should [verb] [expected behavior]"
 
 ```typescript
-describe("parseBrandXml", () => {
-  it("should parse minimal brand XML", () => { ... });
+describe("parseSkinXml", () => {
+  it("should parse minimal skin XML", () => { ... });
   it("should parse colors section", () => { ... });
   it("should throw on missing required sections", () => { ... });
-  it("should throw when brand element is missing name attribute", () => { ... });
+  it("should throw when skin element is missing name attribute", () => { ... });
 });
 ```
 
@@ -214,11 +214,11 @@ describe("parseBrandXml", () => {
 
 ```typescript
 // Value assertions
-expect(brand.name).toBe("test");
-expect(brand.colors.palette).toHaveLength(1);
+expect(skin.name).toBe("test");
+expect(skin.colors.palette).toHaveLength(1);
 
 // Error assertions with regex
-expect(() => parseBrandXml("invalid")).toThrow(/pattern/);
+expect(() => parseSkinXml("invalid")).toThrow(/pattern/);
 expect(() => fn()).toThrow(/name.*attribute.*required/i);
 ```
 

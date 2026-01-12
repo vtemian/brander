@@ -1,13 +1,13 @@
 {
   "name": "opencode-reskin",
-  "version": "0.1.0",
-  "description": "OpenCode plugin for brand transformation planning (opencode-reskin)",
+  "version": "0.2.0",
+  "description": "OpenCode plugin for skin transformation planning (opencode-reskin)",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "type": "module",
   "files": [
     "dist",
-    "brands"
+    "skins"
   ],
   "exports": {
     ".": {
@@ -16,7 +16,7 @@
     }
   },
   "scripts": {
-    "build": "bun build src/index.ts --outdir dist --target bun --format esm && tsc --emitDeclarationOnly && cp -r brands dist/",
+    "build": "bun build src/index.ts --outdir dist --target bun --format esm && tsc --emitDeclarationOnly && cp -r skins dist/",
     "clean": "rm -rf dist",
     "typecheck": "tsc --noEmit",
     "prepublishOnly": "bun run clean && bun run build",
@@ -29,7 +29,7 @@
   "keywords": [
     "opencode",
     "plugin",
-    "branding",
+    "skining",
     "design-system"
   ],
   "author": "vtemian",

@@ -1,17 +1,17 @@
 import * as v from "valibot";
 
-import { type Brand, BrandSchema } from "./schema";
+import { type Skin, SkinSchema } from "./schema";
 
-export function parseBrandJson(json: string): Brand {
+export function parseSkinJson(json: string): Skin {
   const data = JSON.parse(json);
-  const result = v.safeParse(BrandSchema, data);
+  const result = v.safeParse(SkinSchema, data);
 
   if (!result.success) {
     const issues = v.flatten(result.issues);
     const errorMessages = Object.entries(issues.nested || {})
       .map(([path, errors]) => `${path}: ${errors?.join(", ")}`)
       .join("; ");
-    throw new Error(`Invalid brand JSON: ${errorMessages || "validation failed"}`);
+    throw new Error(`Invalid skin JSON: ${errorMessages || "validation failed"}`);
   }
 
   return result.output;

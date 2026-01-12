@@ -1,45 +1,45 @@
 import { beforeAll, describe, expect, it } from "bun:test";
 
 import { agents, PRIMARY_AGENT_NAME } from "../src/agents";
-import { getBrand, loadBrands } from "../src/brands";
+import { getSkin, loadSkins } from "../src/skins";
 
 describe("Reskin plugin integration", () => {
   beforeAll(async () => {
-    await loadBrands();
+    await loadSkins();
   });
 
-  describe("Brand loading", () => {
-    it("should load nof1 brand with all required sections", () => {
-      const brand = getBrand("nof1");
+  describe("Skin loading", () => {
+    it("should load nof1 skin with all required sections", () => {
+      const skin = getSkin("nof1");
 
-      expect(brand).toBeDefined();
-      expect(brand!.name).toBe("nof1");
-      expect(brand!.version).toBe("1.1");
+      expect(skin).toBeDefined();
+      expect(skin!.name).toBe("nof1");
+      expect(skin!.version).toBe("1.1");
 
       // Required sections
-      expect(brand!.meta).toBeDefined();
-      expect(brand!.colors).toBeDefined();
-      expect(brand!.typography).toBeDefined();
-      expect(brand!.spacing).toBeDefined();
-      expect(brand!.radius).toBeDefined();
+      expect(skin!.meta).toBeDefined();
+      expect(skin!.colors).toBeDefined();
+      expect(skin!.typography).toBeDefined();
+      expect(skin!.spacing).toBeDefined();
+      expect(skin!.radius).toBeDefined();
 
       // Optional sections (present in nof1)
-      expect(brand!.voice).toBeDefined();
-      expect(brand!.guidelines).toBeDefined();
+      expect(skin!.voice).toBeDefined();
+      expect(skin!.guidelines).toBeDefined();
     });
 
     it("should have correct nof1 color palette", () => {
-      const brand = getBrand("nof1");
-      const ink = brand!.colors.palette.find((c) => c.name === "ink");
-      const paper = brand!.colors.palette.find((c) => c.name === "paper");
+      const skin = getSkin("nof1");
+      const ink = skin!.colors.palette.find((c) => c.name === "ink");
+      const paper = skin!.colors.palette.find((c) => c.name === "paper");
 
       expect(ink?.value).toBe("#111111");
       expect(paper?.value).toBe("#ffffff");
     });
 
     it("should have correct nof1 typography", () => {
-      const brand = getBrand("nof1");
-      const monoFont = brand!.typography.fonts.find((f) => f.role === "mono");
+      const skin = getSkin("nof1");
+      const monoFont = skin!.typography.fonts.find((f) => f.role === "mono");
 
       expect(monoFont?.family).toBe("ui-monospace");
     });
@@ -93,61 +93,61 @@ describe("Reskin plugin integration", () => {
       expect(Object.keys(config.agent)).toContain("component-scanner");
 
       // Command registered
-      expect(config.command.brand).toBeDefined();
-      expect(config.command.brand.agent).toBe("reskin");
+      expect(config.command.skin).toBeDefined();
+      expect(config.command.skin.agent).toBe("reskin");
     });
   });
 
-  describe("Brand JSON injection end-to-end", () => {
-    it("should inject brand JSON when /brand command is used with brand name", async () => {
+  describe("Skin JSON injection end-to-end", () => {
+    it("should inject skin JSON when /skin command is used with skin name", async () => {
       const pluginModule = await import("../src/index");
       const mockCtx = { cwd: () => "/test/project" };
       const plugin = await pluginModule.default(mockCtx);
 
-      // Simulate /brand nof1 command message
+      // Simulate /skin nof1 command message
       const messageInput = { sessionID: "test-session" };
       const messageOutput = {
-        parts: [{ type: "text", text: "/brand nof1" }],
+        parts: [{ type: "text", text: "/skin nof1" }],
       };
       await plugin["chat.message"](messageInput, messageOutput);
 
       // Simulate chat.params with reskin agent prompt
       const paramsInput = { sessionID: "test-session" };
       const paramsOutput = {
-        system: "Test prompt with $BRAND_JSON placeholder",
+        system: "Test prompt with $SKIN_JSON placeholder",
         options: {},
       };
       await plugin["chat.params"](paramsInput, paramsOutput);
 
-      // Brand JSON should be injected
-      expect(paramsOutput.system).not.toContain("$BRAND_JSON");
+      // Skin JSON should be injected
+      expect(paramsOutput.system).not.toContain("$SKIN_JSON");
       expect(paramsOutput.system).toContain('"name": "nof1"');
       expect(paramsOutput.system).toContain("#111111");
     });
 
-    it("should show available brands when /brand command has no argument", async () => {
+    it("should show available skins when /skin command has no argument", async () => {
       const pluginModule = await import("../src/index");
       const mockCtx = { cwd: () => "/test/project" };
       const plugin = await pluginModule.default(mockCtx);
 
-      // Simulate /brand command without argument
+      // Simulate /skin command without argument
       const messageInput = { sessionID: "test-session-2" };
       const messageOutput = {
-        parts: [{ type: "text", text: "/brand" }],
+        parts: [{ type: "text", text: "/skin" }],
       };
       await plugin["chat.message"](messageInput, messageOutput);
 
       // Simulate chat.params
       const paramsInput = { sessionID: "test-session-2" };
       const paramsOutput = {
-        system: "Test prompt with $BRAND_JSON placeholder",
+        system: "Test prompt with $SKIN_JSON placeholder",
         options: {},
       };
       await plugin["chat.params"](paramsInput, paramsOutput);
 
-      // Should show available brands message
-      expect(paramsOutput.system).not.toContain("$BRAND_JSON");
-      expect(paramsOutput.system).toContain("No brand specified");
+      // Should show available skins message
+      expect(paramsOutput.system).not.toContain("$SKIN_JSON");
+      expect(paramsOutput.system).toContain("No skin specified");
       expect(paramsOutput.system).toContain("nof1");
     });
   });

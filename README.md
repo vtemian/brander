@@ -1,22 +1,22 @@
 # opencode-reskin
 
-An OpenCode plugin that generates brand transformation plans for web projects.
+An OpenCode plugin that generates skin transformation plans for web projects.
 
 ```
-/brand nof1
+/skin nof1
 ```
 
 https://github.com/user-attachments/assets/1baafe10-f259-45f3-8fca-a203f41cc0ca
 
 | Before | After |
 |--------|-------|
-| [Original DataFlow](https://htmlpreview.github.io/?https://github.com/vtemian/opencode-reskin/blob/main/example/before.html) | [nof1 Brand](https://htmlpreview.github.io/?https://github.com/vtemian/opencode-reskin/blob/main/example/after.html) |
+| [Original DataFlow](https://htmlpreview.github.io/?https://github.com/vtemian/opencode-reskin/blob/main/example/before.html) | [nof1 Skin](https://htmlpreview.github.io/?https://github.com/vtemian/opencode-reskin/blob/main/example/after.html) |
 
-## Available Brands
+## Available Skins
 
-| Brand | Style | Preview |
+| Skin | Style | Preview |
 |-------|-------|---------|
-| `nof1` | Neutral dashboard, chart-focused | [View](https://htmlpreview.github.io/?https://github.com/vtemian/opencode-reskin/blob/main/brands/brand.html#b=nof1) |
+| `nof1` | Neutral dashboard, chart-focused | [View](https://htmlpreview.github.io/?https://github.com/vtemian/opencode-reskin/blob/main/skins/skin.html#b=nof1) |
 
 ## Quick Start
 
@@ -26,18 +26,18 @@ Add to `~/.config/opencode/opencode.json`:
 { "plugin": ["opencode-reskin"] }
 ```
 
-Run the brand command:
+Run the skin command:
 
 ```
-/brand nof1
+/skin nof1
 ```
 
 ## What It Does
 
-When you run `/brand {name}`, opencode-reskin:
+When you run `/skin {name}`, opencode-reskin:
 
 - Scans your CSS, Tailwind config, and components
-- Compares against the target brand definition
+- Compares against the target skin definition
 - Outputs an actionable checklist with exact file paths and values
 
 The output is a markdown plan you can execute:
@@ -61,15 +61,15 @@ The output is a markdown plan you can execute:
 | **style-analyzer** | Scans CSS, Tailwind, design tokens |
 | **component-scanner** | Finds UI components and their styling |
 
-Subagents analyze your project in parallel, then opencode-reskin compares findings against the brand definition.
+Subagents analyze your project in parallel, then opencode-reskin compares findings against the skin definition.
 
-## Adding Brands
+## Adding Skins
 
-Brands are JSON files in `brands/`. Required fields:
+Skins are JSON files in `skins/`. Required fields:
 
 ```json
 {
-  "name": "my-brand",
+  "name": "my-skin",
   "version": "1.0",
   "meta": { "target": "web" },
   "colors": { "palette": [...], "semantic": [...] },

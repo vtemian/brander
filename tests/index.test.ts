@@ -24,7 +24,7 @@ describe("Reskin plugin", () => {
 });
 
 describe("Plugin config", () => {
-  it("should register /brand command", async () => {
+  it("should register /skin command", async () => {
     const pluginModule = await import("../src/index");
     const mockCtx = { cwd: () => "/test/project" };
     const plugin = await pluginModule.default(mockCtx);
@@ -36,8 +36,8 @@ describe("Plugin config", () => {
 
     await plugin.config(config);
 
-    expect(config.command.brand).toBeDefined();
-    expect(config.command.brand.agent).toBe("reskin");
+    expect(config.command.skin).toBeDefined();
+    expect(config.command.skin.agent).toBe("reskin");
   });
 
   it("should register all agents", async () => {

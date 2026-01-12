@@ -1,17 +1,17 @@
 import type { Plugin } from "@opencode-ai/plugin";
 
 import { agents, PRIMARY_AGENT_NAME } from "@/agents";
-import { listBrands, loadBrands } from "@/brands";
 import { loadCustomConfig } from "@/config/loader";
-import { createBrandInjectorHook } from "@/hooks/brand-injector";
+import { createSkinInjectorHook } from "@/hooks/skin-injector";
+import { listSkins, loadSkins } from "@/skins";
 
 const ReskinPlugin: Plugin = async (_ctx) => {
-  await loadBrands();
-  const availableBrands = listBrands();
+  await loadSkins();
+  const availableSkins = listSkins();
   const customConfig = await loadCustomConfig(agents);
 
-  // Create brand injector hook
-  const brandInjectorHook = createBrandInjectorHook();
+  // Create skin injector hook
+  const skinInjectorHook = createSkinInjectorHook();
 
   return {
     config: async (config) => {
@@ -21,41 +21,41 @@ const ReskinPlugin: Plugin = async (_ctx) => {
         ...customConfig,
       };
 
-      // Register /brand command
+      // Register /skin command
       config.command = {
         ...config.command,
-        brand: {
-          description: "Generate brand transformation plan. Usage: /brand [brand-name]",
+        skin: {
+          description: "Generate skin transformation plan. Usage: /skin [skin-name]",
           agent: PRIMARY_AGENT_NAME,
-          template: createBrandTemplate(availableBrands),
+          template: createSkinTemplate(availableSkins),
         },
       };
     },
 
-    // Intercept messages to extract brand name from /brand command
+    // Intercept messages to extract skin name from /skin command
     "chat.message": async (input, output) => {
-      await brandInjectorHook["chat.message"](input, output);
+      await skinInjectorHook["chat.message"](input, output);
     },
 
-    // Inject brand XML into agent system prompt
+    // Inject skin XML into agent system prompt
     "chat.params": async (input, output) => {
-      await brandInjectorHook["chat.params"](input, output);
+      await skinInjectorHook["chat.params"](input, output);
     },
   };
 };
 
-function createBrandTemplate(availableBrands: string[]): string {
-  const brandList = availableBrands.map((b) => `- ${b}`).join("\n");
+function createSkinTemplate(availableSkins: string[]): string {
+  const skinList = availableSkins.map((b) => `- ${b}`).join("\n");
 
-  return `Analyze this project and generate a brand transformation plan.
+  return `Analyze this project and generate a skin transformation plan.
 
-Available brands:
-${brandList}
+Available skins:
+${skinList}
 
 User request: $ARGUMENTS
 
-If no brand is specified, ask the user to choose from the available brands.
-If a brand is specified, load its definition and proceed with analysis.`;
+If no skin is specified, ask the user to choose from the available skins.
+If a skin is specified, load its definition and proceed with analysis.`;
 }
 
 export default ReskinPlugin;

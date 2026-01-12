@@ -13,7 +13,7 @@ export const componentScannerAgent: AgentConfig = {
   },
   prompt: `<purpose>
 Scan the project for UI components and identify their current styling patterns.
-Focus on common components that brands typically customize.
+Focus on common components that skins typically customize.
 </purpose>
 
 <target-components>
@@ -77,7 +77,7 @@ Focus on common components that brands typically customize.
 | ... | ... |
 
 ### Other Components
-- List any other branded components found
+- List any other skined components found
 
 ### Patterns Identified
 - Common styling patterns across components

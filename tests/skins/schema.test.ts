@@ -1,14 +1,14 @@
 import { describe, expect, it } from "bun:test";
 
-import type { Brand } from "../../src/brands/schema";
+import type { Skin } from "../../src/skins/schema";
 
-describe("Brand schema types", () => {
-  it("should define Brand interface with required sections", () => {
-    const brand: Brand = {
+describe("Skin schema types", () => {
+  it("should define Skin interface with required sections", () => {
+    const skin: Skin = {
       name: "test",
       version: "1.0",
       meta: {
-        description: "Test brand",
+        description: "Test skin",
         target: "web",
       },
       colors: {
@@ -27,16 +27,16 @@ describe("Brand schema types", () => {
       },
     };
 
-    expect(brand.name).toBe("test");
-    expect(brand.meta.target).toBe("web");
+    expect(skin.name).toBe("test");
+    expect(skin.meta.target).toBe("web");
   });
 
   it("should allow optional sections", () => {
-    const brand: Brand = {
+    const skin: Skin = {
       name: "test",
       version: "1.0",
       meta: {
-        description: "Test brand",
+        description: "Test skin",
         target: "web",
       },
       colors: {
@@ -67,8 +67,8 @@ describe("Brand schema types", () => {
       },
     };
 
-    expect(brand.components).toBeDefined();
-    expect(brand.voice).toBeDefined();
-    expect(brand.guidelines).toBeDefined();
+    expect(skin.components).toBeDefined();
+    expect(skin.voice).toBeDefined();
+    expect(skin.guidelines).toBeDefined();
   });
 });

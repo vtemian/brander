@@ -13,7 +13,7 @@ export const styleAnalyzerAgent: AgentConfig = {
   },
   prompt: `<purpose>
 Analyze the project's current styling implementation to extract design tokens and patterns.
-Return structured findings for comparison against a target brand.
+Return structured findings for comparison against a target skin.
 </purpose>
 
 <focus-areas>
