@@ -1,4 +1,5 @@
 import { existsSync, readdirSync, readFileSync } from "node:fs";
+import { createRequire } from "node:module";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -15,20 +16,50 @@ const skinJson = new Map<string, string>();
 
 // Get the directory where skin JSON files are located
 function getSkinsDir(): string {
+  // Strategy 1: Use createRequire to find the package location (works for npm installs)
+  // This is the most reliable method when installed as a dependency
+  try {
+    const require = createRequire(import.meta.url);
+    const packageJsonPath = require.resolve("opencode-reskin/package.json");
+    const packageRoot = dirname(packageJsonPath);
+    const npmSkinsPath = join(packageRoot, "skins");
+    if (existsSync(npmSkinsPath)) {
+      return npmSkinsPath;
+    }
+    // Also check dist/skins for bundled package
+    const npmDistSkinsPath = join(packageRoot, "dist", "skins");
+    if (existsSync(npmDistSkinsPath)) {
+      return npmDistSkinsPath;
+    }
+  } catch {
+    // Package not found via require.resolve, try other methods
+  }
+
+  // Strategy 2: Resolve from import.meta.url (works for local development/tests)
   const currentFile = fileURLToPath(import.meta.url);
   const currentDir = dirname(currentFile);
 
-  // When bundled: skins/ is copied to dist/skins/
-  // The bundle is at dist/index.js, so skins/ is at dist/skins/
-  const bundledPath = join(currentDir, "skins");
-  if (existsSync(bundledPath)) {
-    return bundledPath;
+  // When running from source (src/skins/index.ts), go up to project root
+  const projectRoot = join(currentDir, "..", "..");
+  const devPath = join(projectRoot, "skins");
+  if (existsSync(devPath)) {
+    return devPath;
   }
 
-  // When running from source (dev/tests): go up to project root
-  // From src/skins/, go up two levels to project root
-  const projectRoot = join(currentDir, "..", "..");
-  return join(projectRoot, "skins");
+  // When running from dist/index.js, check sibling skins folder
+  const distSkinsPath = join(currentDir, "skins");
+  if (existsSync(distSkinsPath)) {
+    return distSkinsPath;
+  }
+
+  // When running from dist/, check parent's skins folder
+  const packageRootSkins = join(currentDir, "..", "skins");
+  if (existsSync(packageRootSkins)) {
+    return packageRootSkins;
+  }
+
+  // Fallback - return a path that will give a useful error message
+  return devPath;
 }
 
 export async function loadSkins(): Promise<void> {
